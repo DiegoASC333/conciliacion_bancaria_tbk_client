@@ -19,6 +19,13 @@ const routes: Routes = [
         path: 'pages',
         loadChildren: () => import('./views/pages/pages.module').then((m) => m.PagesModule),
       },
+      {
+        path: 'status-cuadratura',
+        loadChildren: () =>
+          import('./views/status-cuadratura/status-cuadratura.module').then(
+            (m) => m.StatusCuadraturaModule
+          ),
+      },
     ],
   },
   {

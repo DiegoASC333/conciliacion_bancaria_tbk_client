@@ -1,0 +1,147 @@
+<c-col>
+  <div class="mb-3">
+    <h1>{{ title }}</h1>
+    <c-breadcrumb>
+      <ng-container *ngFor="let breadcrumb of breadcrumbs">
+        <c-breadcrumb-item [url]="breadcrumb.url" [active]="breadcrumb.active">
+          {{ breadcrumb.label }}
+        </c-breadcrumb-item>
+      </ng-container>
+    </c-breadcrumb>
+  </div>
+</c-col>
+<c-row>
+  <div class="mb-3" *ngIf="button.isVisible">
+    <button cButton color="success" class="text-white" (click)="button.action()">
+      <svg [cIcon]="icons.cilArrowRight"></svg> {{ button.label | uppercase }}
+    </button>
+  </div>
+  <c-col>
+    <c-card class="mb-3">
+      <c-card-body>
+        <c-smart-table
+          header
+          [itemsPerPageSelect]="true"
+          [itemsPerPage]="20"
+          pagination
+          [items]="items"
+          [columns]="columns"
+          [columnFilter]="true"
+          [columnSorter]="false"
+          [tableProps]="{
+            hover: true,
+            striped: true,
+            responsive: true,
+            bordered: true,
+          }"
+          [tableFilter]="filterOptions.active"
+          [tableFilterPlaceholder]="filterOptions.placeholder"
+          [tableFilterLabel]="filterOptions.label"
+          itemsPerPageLabel="Registros:"
+          [noItemsLabel]="'Sin Resultados'"
+          [tableHeadProps]="{ color: 'light' }"
+        >
+          <ng-template
+            cTemplateId="tableData"
+            let-columnName="columnName"
+            let-item="items"
+            let-tdContent="tdContent"
+          >
+            <ng-container *ngIf="tdContent?.isAction; else elseBlock">
+              <td class="bordered cell center_td">
+                <button
+                  *ngIf="!tdContent.isLoadingButton"
+                  cButton
+                  size="sm"
+                  id="{{ tdContent.id ?? '' }}"
+                  (click)="tdContent.action('rut')"
+                  color="{{ tdContent.color ?? 'primary' }}"
+                >
+                  <svg cIcon *ngIf="tdContent.icon" name="{{ tdContent.icon }}"></svg>
+
+                  {{ tdContent.label | uppercase }}
+                </button>
+                <button
+                  *ngIf="tdContent.isLoadingButton"
+                  (click)="tdContent.action('rut')"
+                  [loading]="loading"
+                  id="{{ tdContent.id ?? '' }}"
+                  cLoadingButton
+                  variant="outline"
+                  disabledOnLoading
+                  size="sm"
+                  color="{{ tdContent.color ?? 'primary' }}"
+                >
+                  <svg cIcon *ngIf="tdContent.icon" name="{{ tdContent.icon }}"></svg>
+                  {{ tdContent.label | uppercase }}
+                </button>
+              </td>
+            </ng-container>
+            <ng-container *ngIf="tdContent?.isButtonGroup">
+              <td class="center_td">
+                <c-button-group>
+                  <button
+                    *ngFor="let button of tdContent.buttons"
+                    cButton
+                    size="sm"
+                    (click)="button.action('rut')"
+                    color="{{ button.color ?? 'primary' }}"
+                  >
+                    <svg cIcon *ngIf="button.icon" name="{{ button.icon }}"></svg>
+                    {{ button.label | uppercase }}
+                  </button>
+                </c-button-group>
+              </td>
+            </ng-container>
+            <ng-container *ngIf="tdContent?.isStatusBadge">
+              <td class="bordered cell center_td">
+                <c-badge [color]="tdContent.color">{{ tdContent.text }}</c-badge>
+              </td>
+            </ng-container>
+            <ng-container *ngIf="tdContent?.isInput">
+              <td class="bordered cell">
+                <input
+                  type="text"
+                  value="{{ tdContent.value ?? '' }}"
+                  id="{{ tdContent.id ?? '' }}"
+                  class="form-control"
+                />
+              </td>
+            </ng-container>
+            <ng-container *ngIf="tdContent?.isFormatted">
+              <td>
+                {{ tdContent.isFormatMoney ? (tdContent.value | currency: 'CLP' : 'symbol') : '' }}
+                {{ tdContent.isFormatRut ? (tdContent.value | rut) : '' }}
+              </td>
+            </ng-container>
+            <ng-container *ngIf="isNumberType(tdContent)">
+              <td>
+                {{ tdContent }}
+              </td>
+            </ng-container>
+            <ng-container *ngIf="isStringType(tdContent)">
+              <td>
+                <!-- {{ (tdContent.startsWith('FCA') ? tdContent : tdContent | titlecase) }} -->
+                {{ tdContent }}
+              </td>
+            </ng-container>
+            <ng-container *ngIf="isEmpty(tdContent)">
+              <td>-</td>
+            </ng-container>
+            <ng-container *ngIf="tdContent?.isCheck">
+              <td class="bordered cell text-center">
+                <c-form-check sizing="xl" [switch]="true">
+                  <input
+                    cFormCheckInput
+                    type="checkbox"
+                    [checked]="tdContent?.isChecked ?? false"
+                  />
+                </c-form-check>
+              </td>
+            </ng-container>
+          </ng-template>
+        </c-smart-table>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

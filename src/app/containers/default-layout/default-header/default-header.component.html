@@ -1,0 +1,46 @@
+<!--<c-header class="mb-4 d-print-none" position="sticky">-->
+<ng-container>
+  <c-container [fluid]="true" class="px-0">
+    <button toggle="visible" cHeaderToggler [cSidebarToggle]="sidebarId" class="px-md-0 mx-md-3">
+      <svg cIcon name="cilMenu" size="lg"></svg>
+    </button>
+    <c-header-brand class="me-auto d-md-none d-flex ms-2 text-white">
+      <!-- <svg [cIcon]="logoNegative" class="sidebar-brand-full" height="34"></svg> -->
+      <img class="sidebar-brand-full" height="55" src="{{ logoNegative }}" />
+    </c-header-brand>
+
+    <c-header-nav class="d-none d-lg-flex ms-auto"> </c-header-nav>
+    <c-header-nav class="mx-0">
+      <ng-container *ngTemplateOutlet="userDropdown"></ng-container>
+    </c-header-nav>
+  </c-container>
+</ng-container>
+<!--</c-header>-->
+
+<ng-template #userDropdown>
+  <span id="username"
+    ><strong>{{ user?.name ?? 'Proyecto' }} {{ user?.lastname ?? 'Base' }}</strong
+    ><br />{{ user?.role ?? '' | roleTranslate }}</span
+  >
+  <c-dropdown alignment="end" variant="nav-item">
+    <a href [caret]="false" cDropdownToggle class="py-0">
+      <c-avatar cTextColor="primary" shape="rounded-1" size="md" src="{{ profilePicture }}">
+      </c-avatar>
+    </a>
+    <ul cDropdownMenu class="pt-0 pr-5 w-auto">
+      <li>
+        <h6 cDropdownHeader class="bg-light dark:bg-white dark:bg-opacity-10 fw-semibold py-2">
+          Opciones
+        </h6>
+      </li>
+      <li></li>
+      <li>
+        <a cDropdownItem (click)="logout()">
+          <svg cIcon class="me-2" name="cilLockLocked"></svg>
+          Cerrar sesión
+        </a>
+      </li>
+      <li></li>
+    </ul>
+  </c-dropdown>
+</ng-template>

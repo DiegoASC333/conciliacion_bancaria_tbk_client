@@ -1,0 +1,32 @@
+<c-modal
+  #modal
+  class="modal-lg"
+  [keyboard]="false"
+  [visible]="visible"
+  backdrop="static"
+  [ngClass]="{ modalOverlay: visible }"
+>
+  <c-modal-header class="bg-primary text-white">
+    <h5 cModalTitle>{{ schema.title }}</h5>
+  </c-modal-header>
+  <c-modal-body>
+    <div class="col-md-12">
+      <!--{{ schema.body }}-->
+      <pre>{{ schema.body }}</pre>
+    </div>
+  </c-modal-body>
+  <c-modal-footer>
+    <button
+      cButton
+      color="{{ button.color }}"
+      [ngClass]="{
+        'text-white': button.color !== 'secondary',
+      }"
+      *ngFor="let button of schema.buttons"
+      (click)="button.action()"
+    >
+      <svg cIcon *ngIf="button.icon" name="{{ button.icon }}"></svg>
+      {{ button.label | uppercase }}
+    </button>
+  </c-modal-footer>
+</c-modal>

@@ -1,0 +1,30 @@
+.btn-success,
+.btn-danger {
+  color: white;
+}
+
+.custom-button-close-modal {
+  background-color: white;
+  /* Fondo blanco */
+  color: black;
+  border: none;
+}
+
+.center_td {
+  text-align: center;
+  justify-content: center;
+}
+
+.center-content .form-control {
+  text-align: center;
+}
+
+:host ::ng-deep table {
+  table-layout: auto !important;
+  width: auto !important;
+}
+
+:host ::ng-deep th,
+:host ::ng-deep td {
+  white-space: nowrap;
+}

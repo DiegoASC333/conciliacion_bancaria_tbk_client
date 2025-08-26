@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { IColumn, IItem } from '@coreui/angular-pro';
 import { RutValidator } from 'ng9-rut';
 import { cilArrowRight, cilX } from '@coreui/icons';
@@ -25,6 +25,9 @@ export class CustomTableComponent {
   };
   @Input() loading: boolean = true;
   @Input() breadcrumbs: Breadcrumb[] = [];
+
+  // NUEVO: evento opcional para acciones por fila
+  @Output() action = new EventEmitter<{ action: string; item: any }>();
 
   constructor(private rutValidator: RutValidator) {}
 
@@ -73,5 +76,10 @@ export class CustomTableComponent {
       tdContent === undefined ||
       tdContent === null
     );
+  }
+
+  onActionClick(item: any) {
+    const act = item?.action?.name ?? ''; // por defecto
+    this.action.emit({ action: act, item });
   }
 }

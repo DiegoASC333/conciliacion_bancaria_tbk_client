@@ -26,6 +26,11 @@ const routes: Routes = [
             (m) => m.StatusCuadraturaModule
           ),
       },
+      {
+        path: 'tbk-registros/:tipo',
+        loadChildren: () =>
+          import('./views/tbk-registros/tbk-registros.module').then((m) => m.TbkRegistrosModule),
+      },
     ],
   },
   {

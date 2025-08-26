@@ -1,0 +1,17 @@
+<c-modal
+  alignment="center"
+  id="viewModalRegistros"
+  backdrop="static"
+  [visible]="visible"
+  #fullScreen
+  [fullscreen]="true"
+>
+  <c-modal-header>
+    <h5 cModalTitle class="text-uppercase">Registros</h5>
+    <button class="custom-button-close-modal" cButtonClose (click)="close()"></button>
+  </c-modal-header>
+  <c-modal-body
+    ><app-custom-table [columns]="columns" [items]="this.registrosTbk"></app-custom-table
+  ></c-modal-body>
+  <c-modal-footer><button cButton color="primary">Cerrar</button></c-modal-footer>
+</c-modal>

@@ -1,0 +1,29 @@
+.totales-horizontal {
+  padding: 1rem; /* espacio interno alrededor de la tabla */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem; /* espacio debajo del bloque */
+}
+
+.totales-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.totales-table th,
+.totales-table td {
+  padding: 12px 16px; /* espacio dentro de cada celda */
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.totales-table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  text-align: left;
+}
+
+.totales-table td {
+  text-align: right;
+  font-weight: 500;
+}

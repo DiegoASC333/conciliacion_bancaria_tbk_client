@@ -1,0 +1,18 @@
+.totales-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.totales-table th,
+.totales-table td {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.totales-table th {
+  background-color: #f9f9f9;
+  text-align: left;
+  white-space: nowrap;
+}

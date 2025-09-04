@@ -31,6 +31,16 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/tbk-registros/tbk-registros.module').then((m) => m.TbkRegistrosModule),
       },
+      {
+        path: 'liquidacion/:tipo',
+        loadChildren: () =>
+          import('./views/liquidaciones/liquidaciones.module').then((m) => m.LiquidacionModule),
+      },
+      {
+        path: 'cartola-tbk/:tipo',
+        loadChildren: () =>
+          import('./views/cartola-tbk/cartola-tbk.module').then((m) => m.CartolaTbkModule),
+      },
     ],
   },
   {

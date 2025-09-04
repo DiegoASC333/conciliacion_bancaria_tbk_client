@@ -5,11 +5,11 @@ import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class LiquidacionServiceService {
+export class CartolaTbkService {
   private apiUrl = environment.apiURL;
   constructor(private http: HttpClient) {}
 
-  getLiquidacion(data: any) {
-    return this.http.post(`${this.apiUrl}/liquidacion`, data);
+  getCartola(data: any) {
+    return this.http.post(`${this.apiUrl}/cartola-tbk`, data);
   }
 }

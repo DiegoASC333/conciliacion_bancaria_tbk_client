@@ -1,0 +1,44 @@
+<h1>Cartola {{ titulo }}</h1>
+<c-container>
+  <c-row class="mb-3">
+    <c-col lg="5">
+      <c-date-range-picker
+        [(startDate)]="startDate"
+        [(endDate)]="endDate"
+        (startDateChange)="onDateChange()"
+        (endDateChange)="onDateChange()"
+      />
+    </c-col>
+    <c-col lg="3" class="d-flex align-items-center">
+      <button cButton color="primary" (click)="cargarCartola()" [disabled]="!startDate || !endDate">
+        Buscar
+      </button>
+    </c-col>
+  </c-row>
+  <c-container>
+    <app-custom-table [items]="registrosTbk"></app-custom-table>
+  </c-container>
+  <!-- Totales -->
+  <c-row>
+    <c-col xs="4" class="pb-3">
+      <div *ngIf="totalesTbk" class="totales-horizontal mt-4">
+        <table class="totales-table">
+          <tbody>
+            <tr>
+              <th scope="row">Saldo Estimado</th>
+              <td class="text-end">
+                {{ totalesTbk.saldoEstimado | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Saldo por Cobrar</th>
+              <td class="text-end">
+                {{ totalesTbk.saldoPorCobrar | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </c-col>
+  </c-row>
+</c-container>

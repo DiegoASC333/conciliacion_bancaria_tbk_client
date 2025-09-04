@@ -9,6 +9,36 @@ export const navItems: any = [
         url: 'status-cuadratura',
         iconComponent: { name: 'cil-list' },
       },
+      {
+        name: 'Liquidaciones',
+        url: '',
+        iconComponent: { name: 'cil-list' },
+        children: [
+          {
+            name: 'Crédito',
+            url: '/liquidacion/credito',
+          },
+          {
+            name: 'Débito',
+            url: '/liquidacion/debito',
+          },
+        ],
+      },
+      {
+        name: 'Cartola',
+        url: '',
+        iconComponent: { name: 'cil-list' },
+        children: [
+          {
+            name: 'Crédito',
+            url: 'cartola-tbk/credito',
+          },
+          {
+            name: 'Débito',
+            url: 'cartola-tbk/debito',
+          },
+        ],
+      },
     ],
   },
 ];

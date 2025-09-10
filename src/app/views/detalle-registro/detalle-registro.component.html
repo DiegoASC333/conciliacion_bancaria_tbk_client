@@ -1,0 +1,29 @@
+<c-modal
+  alignment="center"
+  id="modalHistorialRut"
+  backdrop="static"
+  [visible]="visible"
+  #modalXl
+  size="xl"
+  ><c-modal-header>
+    <h5 cModalTitle class="text-uppercase">Historial</h5>
+    <button class="custom-button-close-modal" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body
+    ><c-row
+      ><c-col><label cLabel>Cupón</label><input cInput type="text" disabled /></c-col>
+      <c-col><label cInput>Nombre</label><input cInput type="text" disabled /></c-col>
+      <c-col><label for="">Rut</label><input cInput type="text" disabled /></c-col>
+    </c-row>
+    <c-row>
+      <h1>tabla</h1>
+    </c-row>
+    <c-row>
+      <c-col><label cLabel>Total Abonado</label> <input cInput type="text" disabled /></c-col>
+      <c-col><label cLabel>Saldo por cobrar</label><input cInput type="text" disabled /></c-col>
+      <c-col><label cLabel>Venta total</label><input cInput type="text" disabled /></c-col>
+      <c-col><label cLabel>Cuotas restantes</label><input cInput type="text" disabled /></c-col>
+    </c-row>
+  </c-modal-body>
+  <c-modal-footer></c-modal-footer>
+</c-modal>

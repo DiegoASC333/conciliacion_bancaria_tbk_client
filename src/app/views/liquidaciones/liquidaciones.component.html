@@ -1,6 +1,11 @@
 <h1 class="mb-4">Liquidaciones {{ titulo }}</h1>
 
 <c-container fluid>
+  <div>
+    <button cButton color="primary" (click)="Exportar()">Exportar a excel</button>
+  </div>
+  <!-- Tabla de liquidaciones -->
+  <app-custom-table [items]="liquidacionesTbk"></app-custom-table>
   <!-- Totales en formato horizontal -->
   <div *ngIf="totalesPorComercio?.length > 0" class="totales-horizontal mb-4">
     <table class="totales-table w-100">
@@ -9,7 +14,7 @@
         <tr>
           <th scope="row">Código de Comercio</th>
           <td *ngFor="let total of totalesPorComercio">
-            {{ total.CODIGO_COMERCIO }}
+            {{ total.NOMBRE_COMERCIO }}
           </td>
         </tr>
 
@@ -20,15 +25,17 @@
             {{ total.TOTAL_MONTO | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
           </td>
         </tr>
+        <tr class="fw-bold">
+          <th scope="row">TOTAL GENERAL</th>
+          <td [attr.colspan]="totalesPorComercio.length" class="text-end">
+            {{ totalGeneral | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
-
-  <!-- Tabla de liquidaciones -->
-  <app-custom-table [items]="liquidacionesTbk"></app-custom-table>
-
   <!-- Botón -->
   <div class="mt-3">
-    <button cbutton color="primary">Validar a Contabilidad</button>
+    <button cButton color="primary">Validar a Contabilidad</button>
   </div>
 </c-container>

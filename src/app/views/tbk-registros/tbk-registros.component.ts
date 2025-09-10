@@ -9,7 +9,7 @@ import { StatusCuadraturaService } from '../../services/status-cuadratura.servic
 export class TbkRegistrosComponent {
   title = 'Registros TBK';
   @Input() visible: boolean = false;
-  @Input() viewModalRegistros: boolean = false;
+  //@Input() viewModalRegistros: boolean = false;
   @Input() registrosTbk: any[] = [];
   @Input() columns: any[] = [];
   @Input() items: any[] = [];

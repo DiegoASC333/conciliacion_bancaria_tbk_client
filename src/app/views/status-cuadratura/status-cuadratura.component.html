@@ -6,26 +6,16 @@
   <c-row class="align-items-start">
     <c-col>
       <c-card color="light" class="mb-3">
-        <c-card-header>Totales</c-card-header>
+        <c-card-header>Totales {{ monto_total_diario }}</c-card-header>
         <c-card-body>
           <h2>{{ totalDiario }}</h2>
         </c-card-body>
-        <c-card-footer
-          ><button
-            cButton
-            color=""
-            textColor="white"
-            variant="outline"
-            (click)="RedirectTbkRegistros('total')"
-          >
-            Revisar
-          </button>
-        </c-card-footer>
+        <c-card-footer> </c-card-footer>
       </c-card>
     </c-col>
     <c-col>
       <c-card color="success" textColor="white" class="mb-3">
-        <c-card-header>Sin conflictos</c-card-header>
+        <c-card-header>Sin conflictos {{ monto_aprobados }}</c-card-header>
         <c-card-body>
           <h2>{{ aprobadosDiario }}</h2>
         </c-card-body>
@@ -35,16 +25,25 @@
             color=""
             textColor="white"
             variant="outline"
-            (click)="RedirectTbkRegistros('aprobados')"
+            (click)="RedirectTbkRegistros('aprobados', 'CCN')"
           >
-            Revisar
+            Crédito
+          </button>
+          <button
+            cButton
+            color=""
+            textColor="white"
+            variant="outline"
+            (click)="RedirectTbkRegistros('aprobados', 'CDN')"
+          >
+            Débito
           </button>
         </c-card-footer>
       </c-card>
     </c-col>
     <c-col>
       <c-card color="danger" textColor="white" class="mb-3">
-        <c-card-header>Con conflictos</c-card-header>
+        <c-card-header>Con conflictos {{ monto_rechazados }}</c-card-header>
         <c-card-body>
           <h2>{{ rechazadosDiario }}</h2>
         </c-card-body>
@@ -54,16 +53,25 @@
             color=""
             textColor="white"
             variant="outline"
-            (click)="RedirectTbkRegistros('rechazados')"
+            (click)="RedirectTbkRegistros('rechazados', 'CCN')"
           >
-            Revisar
+            Crédito
+          </button>
+          <button
+            cButton
+            color=""
+            textColor="white"
+            variant="outline"
+            (click)="RedirectTbkRegistros('rechazados', 'CDN')"
+          >
+            Dédito
           </button>
         </c-card-footer>
       </c-card>
     </c-col>
     <c-col>
       <c-card color="info" textColor="white" class="mb-3">
-        <c-card-header>Reprocesados</c-card-header>
+        <c-card-header>Reprocesados {{ monto_reprocesados }}</c-card-header>
         <c-card-body>
           <h2>{{ reprocesadosDiario }}</h2>
         </c-card-body>
@@ -73,9 +81,18 @@
             color=""
             textColor="white"
             variant="outline"
-            (click)="RedirectTbkRegistros('reprocesados')"
+            (click)="RedirectTbkRegistros('reprocesados', 'CCN')"
           >
-            Revisar
+            Crédito
+          </button>
+          <button
+            cButton
+            color=""
+            textColor="white"
+            variant="outline"
+            (click)="RedirectTbkRegistros('reprocesados', 'CDN')"
+          >
+            Débito
           </button>
         </c-card-footer>
       </c-card>
@@ -149,7 +166,6 @@
 
 <app-tbk-registros
   [visible]="viewModalRegistros"
-  [viewModalRegistros]="viewModalRegistros"
   (closeModal)="onCloseModal()"
   [registrosTbk]="registrosTbk"
 ></app-tbk-registros>

@@ -65,8 +65,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './views/login/login.component';
 import { Ng9RutModule } from 'ng9-rut';
 import { UtilsModule } from './utils/utils.module';
-import { LiquidacionesComponent } from './views/liquidaciones/liquidaciones.component';
-import { CartolaTbkComponent } from './views/cartola-tbk/cartola-tbk.component';
 //import { CrearUsuarioComponent } from './views/modal/crear-usuario/crear-usuario.component';
 //import { PermisosComponent } from './permisos/permisos.component';
 

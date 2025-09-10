@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LiquidacionServiceService } from '../../services/liquidacion-service.service';
-import { formatFechaAny, formatCLP, formatFecha6 } from '../../utils/utils';
+import { formatFechaAny, formatCLP } from '../../utils/utils';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-liquidaciones',
@@ -13,10 +14,13 @@ export class LiquidacionesComponent implements OnInit {
   titulo: string = '';
   liquidacionesTbk: any[] = [];
   totalesPorComercio: any[] = [];
+  totalGeneral: number = 0;
+  tipoBackend: string = '';
 
   constructor(
     private route: ActivatedRoute,
-    private liquidacionService: LiquidacionServiceService
+    private liquidacionService: LiquidacionServiceService,
+    private notifier: NotifierService
   ) {}
 
   ngOnInit() {
@@ -28,7 +32,11 @@ export class LiquidacionesComponent implements OnInit {
 
       if (tipo === 'credito') {
         this.getLiquidacionesCredito();
-      } else if (tipo === 'debito') this.getLiquidacionesDebito();
+        this.tipoBackend = 'LCN';
+      } else if (tipo === 'debito') {
+        this.getLiquidacionesDebito();
+        this.tipoBackend = 'LDN';
+      }
     });
   }
 
@@ -36,9 +44,7 @@ export class LiquidacionesComponent implements OnInit {
     this.tipo = 'LCN';
     this.titulo = 'Crédito';
 
-    const data = {
-      tipo: this.tipo,
-    };
+    const data = { tipo: this.tipo };
 
     this.liquidacionService.getLiquidacion(data).subscribe(
       (res: any) => {
@@ -53,13 +59,23 @@ export class LiquidacionesComponent implements OnInit {
           }));
 
           this.totalesPorComercio = res.data.totales_por_comercio;
+
+          // 👉 calcular total general
+          this.totalGeneral = this.totalesPorComercio.reduce(
+            (acc: number, t: any) => acc + (t.TOTAL_MONTO || 0),
+            0
+          );
         } else {
           this.liquidacionesTbk = [];
+          this.totalesPorComercio = [];
+          this.totalGeneral = 0;
           console.error('Error al obtener liquidaciones o datos inválidos');
         }
       },
       (err) => {
         this.liquidacionesTbk = [];
+        this.totalesPorComercio = [];
+        this.totalGeneral = 0;
         console.error('HTTP error', err);
       }
     );
@@ -101,5 +117,28 @@ export class LiquidacionesComponent implements OnInit {
         console.error('HTTP error', err);
       }
     );
+  }
+
+  Exportar() {
+    const data = { tipo: this.tipoBackend };
+
+    this.liquidacionService.exportarExcel(data).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `liquidaciones_${this.tipoBackend}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        //this.notifier('Archivo exportado correctamente');
+      },
+      error: (err) => {
+        console.error('Error exportando Excel:', err);
+        //this.notifier('Error al exportar Excel');
+      },
+    });
   }
 }

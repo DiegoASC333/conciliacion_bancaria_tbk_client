@@ -16,8 +16,8 @@ export class StatusCuadraturaService {
     return this.http.get(`${this.apiUrl}/status-cuadratura/diaria`);
   }
 
-  getRegistrosTbk(tipo: string) {
-    return this.http.get(`${this.apiUrl}/status-cuadratura/${tipo}`);
+  getRegistrosTbk(tipo: string, tipoTransaccion: string) {
+    return this.http.get(`${this.apiUrl}/status-cuadratura/${tipo}/${tipoTransaccion}`);
   }
 
   reprocesarCupon(cupon: number) {

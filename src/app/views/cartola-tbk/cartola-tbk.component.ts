@@ -15,6 +15,8 @@ export class CartolaTbkComponent implements OnInit {
   startDate: Date | null = null;
   endDate: Date | null = null;
   totalesTbk: { saldoEstimado: number; saldoPorCobrar: number } | null = null;
+  rutSeleccionado: string = '';
+  modalHistorialRut: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -24,7 +26,6 @@ export class CartolaTbkComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe((params) => {
       const p = params['tipo'];
-      // Limpio los datos anteriores
       this.registrosTbk = [];
       this.totalesTbk = null;
       if (p === 'credito') {
@@ -70,6 +71,12 @@ export class CartolaTbkComponent implements OnInit {
           if (Array.isArray(res.data.detalle_transacciones)) {
             this.registrosTbk = res.data.detalle_transacciones.map((r: any) => ({
               ...r,
+              action: {
+                isAction: true,
+                icon: 'cil-history', // icono de CoreUI
+                color: 'info',
+                action: () => this.abrirHistorialRut(r.RUT),
+              },
               FECHA_VENTA: formatFechaAny(r.FECHA_VENTA),
               FECHA_ABONO: formatFechaAny(r.FECHA_ABONO),
               MONTO: formatCLP(r.MONTO),
@@ -151,5 +158,10 @@ export class CartolaTbkComponent implements OnInit {
       },
       (err) => console.error('HTTP error', err)
     );
+  }
+
+  abrirHistorialRut(rut: string) {
+    this.modalHistorialRut = true;
+    this.rutSeleccionado = rut;
   }
 }

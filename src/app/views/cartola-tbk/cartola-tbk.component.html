@@ -15,9 +15,9 @@
       </button>
     </c-col>
   </c-row>
-  <c-container>
-    <app-custom-table [items]="registrosTbk"></app-custom-table>
-  </c-container>
+
+  <app-custom-table [items]="registrosTbk"></app-custom-table>
+
   <!-- Totales -->
   <c-row>
     <c-col xs="4" class="pb-3">
@@ -25,7 +25,7 @@
         <table class="totales-table">
           <tbody>
             <tr>
-              <th scope="row">Saldo Estimado</th>
+              <th scope="row">Total abonado:</th>
               <td class="text-end">
                 {{ totalesTbk.saldoEstimado | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
               </td>
@@ -42,3 +42,9 @@
     </c-col>
   </c-row>
 </c-container>
+
+<app-detalle-registro
+  [visible]="modalHistorialRut"
+  [rut]="rutSeleccionado"
+  [modalHistorialRut]="modalHistorialRut"
+></app-detalle-registro>

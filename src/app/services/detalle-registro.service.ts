@@ -5,16 +5,12 @@ import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class LiquidacionServiceService {
+export class DetalleRegistroService {
   private apiUrl = environment.apiURL;
+
   constructor(private http: HttpClient) {}
 
-  getLiquidacion(data: any) {
-    return this.http.post(`${this.apiUrl}/liquidacion`, data);
-  }
-  exportarExcel(data: any) {
-    return this.http.post(`${this.apiUrl}/liquidacion-excel`, data, {
-      responseType: 'blob',
-    });
+  getDataHistorial(data: any) {
+    return this.http.post(`${this.apiUrl}/historial-rut`, data);
   }
 }

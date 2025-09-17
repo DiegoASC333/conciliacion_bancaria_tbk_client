@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { StatusCuadraturaService } from '../../services/status-cuadratura.service';
 import { formatFechaTbk, formatCLP } from '../../utils/utils';
+import { NotifierService } from 'angular-notifier';
 
 @Component({
   selector: 'app-status-cuadratura',
@@ -26,7 +27,14 @@ export class StatusCuadraturaComponent {
   cupon: number = 0;
   usuario: number = 19273978;
 
-  constructor(private statusCuadraturaService: StatusCuadraturaService) {}
+  /**
+   * @param {NotifierService} notifier - Servicio para mostrar notificaciones.
+   **/
+
+  constructor(
+    private statusCuadraturaService: StatusCuadraturaService,
+    private notifier: NotifierService
+  ) {}
 
   ngOnInit() {
     this.getStatusCuadraturaDiaria();
@@ -52,50 +60,17 @@ export class StatusCuadraturaComponent {
     );
   }
 
-  // RedirectTbkRegistros(tipo: string, tipoTransaccion: string) {
-  //   this.viewModalRegistros = false;
-  //   this.registrosTbk = [];
-
-  //   this.statusCuadraturaService.getRegistrosTbk(tipo, tipoTransaccion).subscribe((res: any) => {
-  //     if (res.status !== 200 || !res?.data) return;
-
-  //     this.registrosTbk = res.data.map((r: any) => ({
-  //       ...r,
-  //       FECHA_ABONO: formatFechaTbk(r.FECHA_ABONO),
-  //       FECHA_TRANSACCION: formatFechaTbk(r.FECHA_TRANSACCION),
-  //       MONTO_TRANSACCION: formatCLP(r.MONTO_TRANSACCION),
-  //       // Solo agregamos action si es 'rechazados'
-  //       ...(tipo === 'rechazados' && {
-  //         action: {
-  //           isAction: true,
-  //           action: () => this.onReprocesar(r),
-  //           label: 'Reprocesar',
-  //           color: 'warning',
-  //           class: 'text-light',
-  //         },
-  //       }),
-  //     }));
-  //   });
-  // }
-
-  // La función que se ejecuta al hacer clic en los botones del padre
   RedirectTbkRegistros(tipo: string, tipoTransaccion: string) {
-    // 1. Ocultamos el modal y limpiamos los datos.
-    // Esto asegura que cada vez que se haga clic, el modal se inicie con un estado limpio.
     this.viewModalRegistros = false;
     this.registrosTbk = [];
 
-    // 2. Cargamos los datos desde el servicio.
-    // Usamos una promesa para esperar la respuesta.
     this.statusCuadraturaService.getRegistrosTbk(tipo, tipoTransaccion).subscribe({
       next: (res: any) => {
-        // 3. Verificamos si la respuesta es exitosa y contiene datos.
         if (res.status === 200 && res.data) {
-          // 4. Mapeamos la data como ya lo haces.
           this.registrosTbk = res.data.map((r: any) => ({
             ...r,
             FECHA_ABONO: formatFechaTbk(r.FECHA_ABONO),
-            FECHA_TRANSACCION: formatFechaTbk(r.FECHA_TRANSACCION),
+            FECHA_VENTA: formatFechaTbk(r.FECHA_VENTA),
             MONTO_TRANSACCION: formatCLP(r.MONTO_TRANSACCION),
             ...(tipo === 'rechazados' && {
               action: {
@@ -107,23 +82,22 @@ export class StatusCuadraturaComponent {
               },
             }),
           }));
-          // 5. Una vez que los datos están listos, mostramos el modal.
-          // Esto asegura que el modal se abra con la data ya cargada.
           this.viewModalRegistros = true;
+          this.notifier.notify('success', 'Cuadratura cargada');
         } else {
-          // 6. Manejamos el caso de una respuesta sin datos o con error.
           this.registrosTbk = [];
           this.viewModalRegistros = false;
-          console.warn('No se encontraron registros o hubo un problema con la respuesta.');
-          // Opcional: mostrar un mensaje al usuario
+          this.notifier.notify(
+            'warning',
+            'No se encontraron registros o hubo un problema con la respuesta.'
+          );
         }
       },
       error: (err) => {
-        // 7. Manejamos cualquier error del servicio.
         console.error('Error al obtener los registros:', err);
+        this.notifier.notify('error', 'Error al obtener los registros' + err);
         this.registrosTbk = [];
         this.viewModalRegistros = false;
-        // Opcional: mostrar un mensaje de error al usuario
       },
     });
   }
@@ -135,7 +109,6 @@ export class StatusCuadraturaComponent {
 
     this.statusCuadraturaService.reprocesarCupon(this.cupon).subscribe({
       next: () => {
-        // Quita de la lista de rechazados o refresca
         this.registrosTbk = this.registrosTbk.filter((r) => r !== item);
         this.getStatusCuadraturaDiaria();
       },
@@ -169,7 +142,7 @@ export class StatusCuadraturaComponent {
   }
 
   onCloseModal() {
-    this.viewModalRegistros = false; // cierra el modal
-    this.registrosTbk = []; // limpia datos
+    this.viewModalRegistros = false;
+    this.registrosTbk = [];
   }
 }

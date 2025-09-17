@@ -5,14 +5,14 @@
       <c-date-range-picker
         [(startDate)]="startDate"
         [(endDate)]="endDate"
-        (startDateChange)="onDateChange()"
-        (endDateChange)="onDateChange()"
+        (startDateChange)="loadData()"
+        (endDateChange)="loadData()"
       />
     </c-col>
-    <c-col lg="3" class="d-flex align-items-center">
-      <button cButton color="primary" (click)="cargarCartola()" [disabled]="!startDate || !endDate">
-        Buscar
-      </button>
+    <c-col>
+      <div>
+        <button cButton color="primary" (click)="Exportar()">Exportar a excel</button>
+      </div>
     </c-col>
   </c-row>
 
@@ -47,4 +47,5 @@
   [visible]="modalHistorialRut"
   [rut]="rutSeleccionado"
   [modalHistorialRut]="modalHistorialRut"
+  (closeModal)="onCloseModal()"
 ></app-detalle-registro>

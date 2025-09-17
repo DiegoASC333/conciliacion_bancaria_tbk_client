@@ -12,4 +12,10 @@ export class CartolaTbkService {
   getCartola(data: any) {
     return this.http.post(`${this.apiUrl}/cartola-tbk`, data);
   }
+
+  exportarExcel(data: any) {
+    return this.http.post(`${this.apiUrl}/cartola-excel`, data, {
+      responseType: 'blob',
+    });
+  }
 }

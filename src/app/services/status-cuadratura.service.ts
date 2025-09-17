@@ -27,4 +27,10 @@ export class StatusCuadraturaService {
   enviarTesorería(data: any) {
     return this.http.post(`${this.apiUrl}/auditoria-dafe`, data);
   }
+
+  exportarExcel(data: any) {
+    return this.http.post(`${this.apiUrl}/cuadratura-excel`, data, {
+      responseType: 'blob',
+    });
+  }
 }

@@ -39,6 +39,11 @@ export const navItems: any = [
           },
         ],
       },
+      {
+        name: 'Contabilidad',
+        url: 'archivos-contabilidad',
+        iconComponent: { name: 'cil-list' },
+      },
     ],
   },
 ];

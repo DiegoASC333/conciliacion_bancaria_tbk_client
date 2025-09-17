@@ -41,6 +41,13 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/cartola-tbk/cartola-tbk.module').then((m) => m.CartolaTbkModule),
       },
+      {
+        path: 'archivos-contabilidad',
+        loadChildren: () =>
+          import('./views/archivos-contabilidad/archivos-contabilidad.module').then(
+            (m) => m.ArchivosContabilidadModule
+          ),
+      },
     ],
   },
   {

@@ -1,9 +1,31 @@
 <h1 class="mb-4">Liquidaciones {{ titulo }}</h1>
+<!-- <div class="d-flex justify-content-center">
+  <c-calendar
+    class="border rounded"
+    locale="en-US"
+    [startDate]="startDate"
+    (dateChange)="onDateSelected($event)"
+  />
+</div> -->
+
+<c-row>
+  <c-col lg="4">
+    <c-date-picker
+      locale="es"
+      format="dd MMMM yyyy"
+      closeOnSelect
+      [value]="selectedDate"
+      (dateChange)="onDateSelected($event)"
+    />
+  </c-col>
+  <c-col>
+    <div>
+      <button cButton color="primary" (click)="Exportar()">Exportar a excel</button>
+    </div>
+  </c-col>
+</c-row>
 
 <c-container fluid>
-  <div>
-    <button cButton color="primary" (click)="Exportar()">Exportar a excel</button>
-  </div>
   <!-- Tabla de liquidaciones -->
   <app-custom-table [items]="liquidacionesTbk"></app-custom-table>
   <!-- Totales en formato horizontal -->

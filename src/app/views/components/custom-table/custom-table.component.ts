@@ -79,7 +79,13 @@ export class CustomTableComponent {
   }
 
   onActionClick(item: any) {
-    const act = item?.action?.name ?? ''; // por defecto
+    //const act = item?.action?.name ?? ''; // por defecto
+    const act = item?.action?.action ?? ''; // ahora lee bien
+    console.log('[CustomTable] onActionClick', { act, item });
+    if (!act) {
+      console.warn('[CustomTable] acción vacía en item', item);
+      return;
+    }
     this.action.emit({ action: act, item });
   }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LiquidacionServiceService } from '../../services/liquidacion-service.service';
-import { formatFechaAny, formatCLP } from '../../utils/utils';
+import { formatCLP } from '../../utils/utils';
 import { NotifierService } from 'angular-notifier';
 
 @Component({
@@ -16,10 +16,7 @@ export class LiquidacionesComponent implements OnInit {
   totalesPorComercio: any[] = [];
   totalGeneral: number = 0;
   tipoBackend: string = '';
-
-  /**
-   * @param {NotifierService} notifier - Servicio para mostrar notificaciones.
-   **/
+  selectedDate: Date = new Date();
 
   constructor(
     private route: ActivatedRoute,
@@ -31,16 +28,13 @@ export class LiquidacionesComponent implements OnInit {
     this.route.params.subscribe((params) => {
       const tipo = params['tipo'];
       if (tipo) {
-        this.loadLiquidaciones(tipo);
+        this.setTipo(tipo);
+        //this.loadLiquidaciones();
       }
     });
   }
 
-  loadLiquidaciones(tipoUrl: string) {
-    this.liquidacionesTbk = [];
-    this.totalesPorComercio = [];
-    this.totalGeneral = 0;
-
+  private setTipo(tipoUrl: string) {
     if (tipoUrl === 'credito') {
       this.tipoBackend = 'LCN';
       this.titulo = 'Crédito';
@@ -49,21 +43,43 @@ export class LiquidacionesComponent implements OnInit {
       this.titulo = 'Débito';
     } else {
       console.error('Tipo de liquidación desconocido:', tipoUrl);
+    }
+
+    this.loadLiquidaciones();
+  }
+
+  onDateSelected(event: Date | null) {
+    if (!event) return;
+    this.selectedDate = event;
+    this.loadLiquidaciones();
+  }
+
+  loadLiquidaciones() {
+    this.liquidacionesTbk = [];
+    this.totalesPorComercio = [];
+    this.totalGeneral = 0;
+
+    if (!this.selectedDate) {
+      this.notifier.notify('warning', 'Por favor, selecciona una fecha.');
       return;
     }
 
-    const data = { tipo: this.tipoBackend };
+    const fechaStr = this.selectedDate.toISOString().split('T')[0];
+
+    const data = {
+      tipo: this.tipoBackend,
+      fecha: fechaStr,
+    };
+
+    console.log('Enviando al backend:', { tipo: this.tipoBackend, fecha: fechaStr });
 
     this.liquidacionService.getLiquidacion(data).subscribe({
       next: (res: any) => {
-        if (res.status === 200 && res.data && res.data.detalles_transacciones) {
+        if (res.status === 200 && res.data && res.data.detalles_transacciones?.length > 0) {
           this.liquidacionesTbk = res.data.detalles_transacciones.map((r: any) => {
             const limpio = Object.fromEntries(Object.entries(r).filter(([_, v]) => v !== null));
-
             return {
               ...limpio,
-              FECHA_VENTA: formatFechaAny(r.FECHA_VENTA),
-              FECHA_ABONO: formatFechaAny(r.FECHA_ABONO),
               TOTAL_ABONADO: formatCLP(r.TOTAL_ABONADO),
               COMISION_NETA: formatCLP(r.COMISION_NETA),
               COMISION_BRUTA: formatCLP(r.COMISION_BRUTA),
@@ -71,27 +87,26 @@ export class LiquidacionesComponent implements OnInit {
           });
           this.notifier.notify('success', 'Liquidación cargada');
           this.totalesPorComercio = res.data.totales_por_comercio;
-
-          if (this.totalesPorComercio?.length > 0) {
-            this.totalGeneral = this.totalesPorComercio.reduce(
-              (acc: number, t: any) => acc + (t.TOTAL_MONTO || 0),
-              0
-            );
-          } else {
-            this.totalGeneral = 0;
-          }
+          this.totalGeneral =
+            this.totalesPorComercio?.length > 0
+              ? this.totalesPorComercio.reduce(
+                  (acc: number, t: any) => acc + (t.TOTAL_MONTO || 0),
+                  0
+                )
+              : 0;
         } else {
           this.liquidacionesTbk = [];
           this.totalesPorComercio = [];
           this.totalGeneral = 0;
-          this.notifier.notify('warging', 'Error al obtener liquidaciones o datos inválidos');
+          this.notifier.notify('warning', 'No existen datos para la fecha seleccionada');
         }
       },
       error: (err) => {
         this.liquidacionesTbk = [];
         this.totalesPorComercio = [];
         this.totalGeneral = 0;
-        this.notifier.notify('error', 'Error al obtener liquidaciones o datos inválidos');
+        this.notifier.notify('error', 'Error al obtener liquidaciones desde el servidor', err);
+        console.error(err);
       },
     });
   }

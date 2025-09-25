@@ -12,7 +12,11 @@
     <button class="custom-button-close-modal" cButtonClose (click)="close()"></button>
   </c-modal-header>
   <c-modal-body
-    ><app-custom-table [columns]="columns" [items]="this.registrosTbk"></app-custom-table
+    ><app-custom-table
+      [columns]="columns"
+      [items]="this.registrosTbk"
+      (action)="onTablaAction($event)"
+    ></app-custom-table
   ></c-modal-body>
   <c-modal-footer><button cButton color="primary" (click)="close()">Cerrar</button></c-modal-footer>
 </c-modal>

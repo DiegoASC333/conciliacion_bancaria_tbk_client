@@ -75,13 +75,15 @@ export class StatusCuadraturaComponent {
             ...(tipo === 'rechazados' && {
               action: {
                 isAction: true,
-                action: () => this.onReprocesar(r),
+                //action: () => this.onReprocesar(r),
+                action: 'reprocesar',
                 label: 'Reprocesar',
                 color: 'warning',
                 class: 'text-light',
               },
             }),
           }));
+          console.log('[Padre] registrosTbk después de map =>', this.registrosTbk);
           this.viewModalRegistros = true;
           this.notifier.notify('success', 'Cuadratura cargada');
         } else {
@@ -103,12 +105,14 @@ export class StatusCuadraturaComponent {
   }
 
   onReprocesar(item: any) {
+    console.log('[Padre] onReprocesar called', item);
     item.action.disabled = true;
 
     this.cupon = item.CUPON ?? null;
 
     this.statusCuadraturaService.reprocesarCupon(this.cupon).subscribe({
       next: () => {
+        console.log('[Padre] reproceso OK', item);
         this.registrosTbk = this.registrosTbk.filter((r) => r !== item);
         this.getStatusCuadraturaDiaria();
       },
@@ -120,7 +124,7 @@ export class StatusCuadraturaComponent {
 
   enviarTesoreria() {
     if (this.rechazadosDiario > 0 && this.aprobadosDiario > 0) {
-      alert('No se puede enviar a tesorería si hay registros con conflictos');
+      this.notifier.notify('warning', 'No se puede enviar si existen registros con conflictos');
     }
 
     const usuarioId = this.usuario || 'desconocido';

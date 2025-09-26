@@ -17,4 +17,8 @@ export class LiquidacionServiceService {
       responseType: 'blob',
     });
   }
+
+  validarLiquidaciones(payload: any) {
+    return this.http.post(`${this.apiUrl}/validar`, payload);
+  }
 }

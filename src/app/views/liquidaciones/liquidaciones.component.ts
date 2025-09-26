@@ -17,6 +17,7 @@ export class LiquidacionesComponent implements OnInit {
   totalGeneral: number = 0;
   tipoBackend: string = '';
   selectedDate: Date = new Date();
+  estaValidando: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -107,6 +108,37 @@ export class LiquidacionesComponent implements OnInit {
         this.totalGeneral = 0;
         this.notifier.notify('error', 'Error al obtener liquidaciones desde el servidor', err);
         console.error(err);
+      },
+    });
+  }
+
+  validarContabilidad(): void {
+    if (this.liquidacionesTbk.length === 0) {
+      // Podemos seguir usando liquidacionesTbk para la validación visual
+      this.notifier.notify('warning', 'No hay transacciones para validar.');
+      return;
+    }
+
+    this.estaValidando = true;
+
+    // Enviamos SOLO los parámetros. Asumimos que tienes el ID del usuario.
+    const payload = {
+      tipo: this.tipoBackend,
+      fecha: this.selectedDate.toISOString().split('T')[0],
+      usuarioId: '19273978', // Reemplazar con el ID del usuario logueado
+    };
+
+    this.liquidacionService.validarLiquidaciones(payload).subscribe({
+      next: (response) => {
+        this.notifier.notify('success', `Liquidaciones validadas y guardadas.`);
+        this.loadLiquidaciones(); // Recargar para limpiar y mostrar el estado actualizado
+      },
+      error: (err) => {
+        this.notifier.notify('error', err.error.mensaje || 'Ocurrió un error al validar.');
+        console.error('Error en la validación:', err);
+      },
+      complete: () => {
+        this.estaValidando = false;
       },
     });
   }

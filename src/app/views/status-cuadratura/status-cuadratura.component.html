@@ -2,6 +2,15 @@
 <c-container>
   <br />
   <h4>Diario</h4>
+  <c-col lg="4">
+    <c-date-picker
+      locale="es"
+      format="dd MMMM yyyy"
+      closeOnSelect
+      [value]="selectedDate"
+      (dateChange)="onDateChange($event)"
+    />
+  </c-col>
   <hr />
   <c-row class="align-items-start">
     <c-col>
@@ -25,7 +34,7 @@
             color=""
             textColor="white"
             variant="outline"
-            (click)="RedirectTbkRegistros('aprobados', 'CCN')"
+            (click)="RedirectTbkRegistros('aprobados', 'CCN', selectedDate)"
           >
             Crédito
           </button>
@@ -34,7 +43,7 @@
             color=""
             textColor="white"
             variant="outline"
-            (click)="RedirectTbkRegistros('aprobados', 'CDN')"
+            (click)="RedirectTbkRegistros('aprobados', 'CDN', selectedDate)"
           >
             Débito
           </button>
@@ -53,7 +62,7 @@
             color=""
             textColor="white"
             variant="outline"
-            (click)="RedirectTbkRegistros('rechazados', 'CCN')"
+            (click)="RedirectTbkRegistros('rechazados', 'CCN', selectedDate)"
           >
             Crédito
           </button>
@@ -62,7 +71,7 @@
             color=""
             textColor="white"
             variant="outline"
-            (click)="RedirectTbkRegistros('rechazados', 'CDN')"
+            (click)="RedirectTbkRegistros('rechazados', 'CDN', selectedDate)"
           >
             Dédito
           </button>
@@ -81,7 +90,7 @@
             color=""
             textColor="white"
             variant="outline"
-            (click)="RedirectTbkRegistros('reprocesados', 'CCN')"
+            (click)="RedirectTbkRegistros('reprocesados', 'CCN', selectedDate)"
           >
             Crédito
           </button>
@@ -90,7 +99,7 @@
             color=""
             textColor="white"
             variant="outline"
-            (click)="RedirectTbkRegistros('reprocesados', 'CDN')"
+            (click)="RedirectTbkRegistros('reprocesados', 'CDN', selectedDate)"
           >
             Débito
           </button>

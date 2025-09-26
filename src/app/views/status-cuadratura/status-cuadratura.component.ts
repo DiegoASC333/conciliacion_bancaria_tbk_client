@@ -26,6 +26,8 @@ export class StatusCuadraturaComponent {
   registrosTbk: any[] = [];
   cupon: number = 0;
   usuario: number = 19273978;
+  selectedDate: Date = new Date();
+  PendientesAnteriores: boolean = false;
 
   /**
    * @param {NotifierService} notifier - Servicio para mostrar notificaciones.
@@ -37,11 +39,19 @@ export class StatusCuadraturaComponent {
   ) {}
 
   ngOnInit() {
-    this.getStatusCuadraturaDiaria();
+    //this.getStatusCuadraturaDiaria();
+    this.getStatusCuadraturaDiaria(this.selectedDate);
+    this.ejecutarValidacionFechasAnteriores(this.selectedDate);
   }
 
-  getStatusCuadraturaDiaria() {
-    this.statusCuadraturaService.getStatusCuadraturaDiaria().subscribe(
+  onDateChange(newDate: Date) {
+    this.selectedDate = newDate;
+    this.getStatusCuadraturaDiaria(newDate);
+    this.ejecutarValidacionFechasAnteriores(newDate);
+  }
+
+  getStatusCuadraturaDiaria(dateToQuery: Date) {
+    this.statusCuadraturaService.getStatusCuadraturaDiaria(dateToQuery).subscribe(
       (res: any) => {
         if (res.status === 200 && res?.data) {
           this.totalDiario = res.data.total_diario;
@@ -60,11 +70,11 @@ export class StatusCuadraturaComponent {
     );
   }
 
-  RedirectTbkRegistros(tipo: string, tipoTransaccion: string) {
+  RedirectTbkRegistros(tipo: string, tipoTransaccion: string, dateToQuery: Date) {
     this.viewModalRegistros = false;
     this.registrosTbk = [];
 
-    this.statusCuadraturaService.getRegistrosTbk(tipo, tipoTransaccion).subscribe({
+    this.statusCuadraturaService.getRegistrosTbk(tipo, tipoTransaccion, dateToQuery).subscribe({
       next: (res: any) => {
         if (res.status === 200 && res.data) {
           this.registrosTbk = res.data.map((r: any) => ({
@@ -100,8 +110,20 @@ export class StatusCuadraturaComponent {
         this.notifier.notify('error', 'Error al obtener los registros' + err);
         this.registrosTbk = [];
         this.viewModalRegistros = false;
+        this.limpiarDatos();
       },
     });
+  }
+
+  limpiarDatos() {
+    this.totalDiario = 0;
+    this.monto_total_diario = formatCLP(0);
+    this.aprobadosDiario = 0;
+    this.monto_aprobados = formatCLP(0);
+    this.rechazadosDiario = 0;
+    this.monto_rechazados = formatCLP(0);
+    this.reprocesadosDiario = 0;
+    this.monto_reprocesados = formatCLP(0);
   }
 
   onReprocesar(item: any) {
@@ -112,9 +134,9 @@ export class StatusCuadraturaComponent {
 
     this.statusCuadraturaService.reprocesarCupon(this.cupon).subscribe({
       next: () => {
-        console.log('[Padre] reproceso OK', item);
+        this.notifier.notify('success', `Cupón ${this.cupon} reprocesado.`);
         this.registrosTbk = this.registrosTbk.filter((r) => r !== item);
-        this.getStatusCuadraturaDiaria();
+        this.getStatusCuadraturaDiaria(this.selectedDate);
       },
       error: () => {
         item.action.disabled = false;
@@ -123,8 +145,14 @@ export class StatusCuadraturaComponent {
   }
 
   enviarTesoreria() {
-    if (this.rechazadosDiario > 0 && this.aprobadosDiario > 0) {
+    if (this.rechazadosDiario > 0) {
       this.notifier.notify('warning', 'No se puede enviar si existen registros con conflictos');
+      return;
+    }
+
+    if (this.aprobadosDiario === 0) {
+      this.notifier.notify('info', 'No hay registros aprobados para enviar.');
+      return;
     }
 
     const usuarioId = this.usuario || 'desconocido';
@@ -132,15 +160,19 @@ export class StatusCuadraturaComponent {
     const data = {
       usuarioId,
       observacion: 'Envío a tesorería desde aplicativo',
+      fecha: this.selectedDate,
+      totalDiario: this.monto_total_diario,
     };
 
     this.statusCuadraturaService.enviarTesorería(data).subscribe({
       next: (res: any) => {
-        console.log(res);
-        this.getStatusCuadraturaDiaria();
+        this.notifier.notify('success', res.message || 'Registros enviados a tesorería.');
+
+        this.getStatusCuadraturaDiaria(this.selectedDate);
       },
       error: (err) => {
         console.error(err);
+        this.notifier.notify('error', err.error?.message || 'Ocurrió un error inesperado.');
       },
     });
   }
@@ -148,5 +180,23 @@ export class StatusCuadraturaComponent {
   onCloseModal() {
     this.viewModalRegistros = false;
     this.registrosTbk = [];
+  }
+
+  ejecutarValidacionFechasAnteriores(fechaAValidar: Date): void {
+    this.statusCuadraturaService.validarFechasAnteriores(fechaAValidar).subscribe({
+      next: (res: any) => {
+        if (res.success && res.data?.existenPendientes) {
+          this.PendientesAnteriores = true;
+          const fechaPendiente = res.data.fechaMasReciente; // ej: '250530'
+          this.notifier.notify(
+            'warning',
+            `¡Atención! Existen registros pendientes en días anteriores (ej: ${fechaPendiente}).`
+          );
+        }
+      },
+      error: (err) => {
+        console.error('Error al realizar la validación de fechas:', err);
+      },
+    });
   }
 }

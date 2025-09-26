@@ -39,6 +39,28 @@
             {{ total.NOMBRE_COMERCIO }}
           </td>
         </tr>
+        <tr>
+          <th scope="row">Cuenta Corriente</th>
+          <td *ngFor="let cta of totalesPorComercio">
+            {{ cta.CUENTA_CORRIENTE }}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Banco</th>
+          <td *ngFor="let banco of totalesPorComercio">
+            {{ banco.BANCO }}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Cuenta Contable</th>
+          <td *ngFor="let cont of totalesPorComercio">
+            {{ cont.CUENTA_CONTABLE }}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Descripcion</th>
+          <td *ngFor="let des of totalesPorComercio">{{ des.DESCRIPCION }}</td>
+        </tr>
 
         <!-- Fila de montos -->
         <tr>
@@ -58,6 +80,14 @@
   </div>
   <!-- Botón -->
   <div class="mt-3">
-    <button cButton color="primary">Validar a Contabilidad</button>
+    <button
+      cButton
+      color="primary"
+      (click)="validarContabilidad()"
+      [disabled]="estaValidando || liquidacionesTbk.length === 0"
+    >
+      <span *ngIf="!estaValidando">Validar a Contabilidad</span>
+      <span *ngIf="estaValidando">Validando...</span>
+    </button>
   </div>
 </c-container>

@@ -3,7 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 import { environment } from '../../environments/environment';
 
-@Injectable()
+export interface User {
+  rut: number;
+  rol: string;
+  perfil: string;
+  activo: number;
+}
+
+@Injectable({
+  providedIn: 'root', // Forma moderna de proveer el servicio
+})
 export class AuthenticationService {
   baseURL: string = environment.apiURL;
 
@@ -11,54 +20,48 @@ export class AuthenticationService {
 
   logout(): boolean {
     localStorage.removeItem('cdp-token');
-    localStorage.removeItem('cdp-role');
-    localStorage.removeItem('cdp-student');
+    localStorage.removeItem('cdp-user');
     return true;
   }
 
   isLogged(): boolean {
     const token = this.getToken();
-    return token ? jwtDecode<JwtPayload>(token).exp! > Date.now() / 1000 : false;
-  }
 
-  login(credentials: any) {
-    return this.httpClient.post(this.baseURL + '/login', credentials);
-  }
+    if (!token || token === 'undefined') {
+      return false;
+    }
 
-  getCurrentUser() {
-    if (this.isLogged()) {
-      const token = this.getToken();
-      const payload: any = jwtDecode(token);
-      localStorage.setItem('cdp-role', payload.role);
-      return {
-        id: payload._id,
-        email: payload.email,
-        name: payload.name,
-        lastname: payload.lastname,
-        role: payload.role,
-        program: payload.program ? payload.program : null,
-        active: payload.active,
-        rut: payload.rut,
-        force_password_update: payload.force_password_update,
-      };
-    } else {
-      return null;
+    try {
+      const payload = jwtDecode<JwtPayload>(token);
+      return payload.exp! > Date.now() / 1000;
+    } catch (error) {
+      console.error('Token inválido detectado. Previniendo error y retornando false.', error);
+      return false; // ¡ESTE RETURN ES LA CLAVE!
     }
   }
 
-  saveToken(token: string) {
-    localStorage.setItem('cdp-token', token);
+  login(credentials: any) {
+    return this.httpClient.post(`${this.baseURL}/login`, credentials);
   }
 
-  getToken(): any {
+  getCurrentUser(): User | null {
+    const userString = localStorage.getItem('cdp-user');
+    if (this.isLogged() && userString) {
+      try {
+        return JSON.parse(userString) as User;
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  saveLoginData(data: { token: string; usuario: User }): void {
+    localStorage.setItem('cdp-token', data.token);
+    localStorage.setItem('cdp-user', JSON.stringify(data.usuario));
+  }
+
+  getToken(): string | null {
     return localStorage.getItem('cdp-token');
-  }
-
-  getRole(): any {
-    return localStorage.getItem('cdp-role');
-  }
-
-  getStudentRun(): any {
-    return localStorage.getItem('cdp-student');
   }
 }

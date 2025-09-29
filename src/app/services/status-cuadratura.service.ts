@@ -17,21 +17,20 @@ export class StatusCuadraturaService {
     return `${year}${month}${day}`;
   }
 
-  getStatusCuadraturaDiaria(fecha: Date) {
+  getStatusCuadraturaDiaria(fecha: Date, perfilDelUsuario: string) {
     const fechaFormateada = this.formatDateToAAMMDD(fecha);
     console.log('fechaFormateada', fechaFormateada);
-    return this.http.get(`${this.apiUrl}/status-cuadratura/${fechaFormateada}`);
+    return this.http.get(`${this.apiUrl}/status-cuadratura/${fechaFormateada}/${perfilDelUsuario}`);
   }
 
   getStatusCuadraturaMensual() {
     return this.http.get(`${this.apiUrl}/status-cuadratura/diaria`);
   }
 
-  getRegistrosTbk(tipo: string, tipoTransaccion: string, fecha: Date) {
+  getRegistrosTbk(tipo: string, tipoTransaccion: string, fecha: Date, perfilDelUsuario: string) {
     const fechaFormateada = this.formatDateToAAMMDD(fecha);
-    console.log('Consultando detalle en URL:', fechaFormateada);
     return this.http.get(
-      `${this.apiUrl}/status-cuadratura/${fechaFormateada}/${tipo}/${tipoTransaccion}`
+      `${this.apiUrl}/status-cuadratura/${fechaFormateada}/${tipo}/${tipoTransaccion}/${perfilDelUsuario}`
     );
   }
 

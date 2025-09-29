@@ -28,6 +28,7 @@ export class StatusCuadraturaComponent {
   usuario: number = 19273978;
   selectedDate: Date = new Date();
   PendientesAnteriores: boolean = false;
+  perfilDelUsuario: string = 'FICA'; //TODO: CAMBIAR ESTO CUANDO CONECTE LOGIN
 
   /**
    * @param {NotifierService} notifier - Servicio para mostrar notificaciones.
@@ -42,6 +43,7 @@ export class StatusCuadraturaComponent {
     //this.getStatusCuadraturaDiaria();
     this.getStatusCuadraturaDiaria(this.selectedDate);
     this.ejecutarValidacionFechasAnteriores(this.selectedDate);
+    console.log('perfil', this.perfilDelUsuario);
   }
 
   onDateChange(newDate: Date) {
@@ -51,68 +53,72 @@ export class StatusCuadraturaComponent {
   }
 
   getStatusCuadraturaDiaria(dateToQuery: Date) {
-    this.statusCuadraturaService.getStatusCuadraturaDiaria(dateToQuery).subscribe(
-      (res: any) => {
-        if (res.status === 200 && res?.data) {
-          this.totalDiario = res.data.total_diario;
-          this.monto_total_diario = formatCLP(res.data.monto_total_diario);
-          this.aprobadosDiario = res.data.aprobados_diario;
-          this.monto_aprobados = formatCLP(res.data.monto_aprobados);
-          this.rechazadosDiario = res.data.rechazados_diario;
-          this.monto_rechazados = formatCLP(res.data.monto_rechazados);
-          this.reprocesadosDiario = res.data.reprocesados_diario;
-          this.monto_reprocesados = formatCLP(res.data.monto_reprocesados);
-        } else {
-          console.log('Error');
-        }
-      },
-      (err) => console.error('HTTP error', err)
-    );
+    this.statusCuadraturaService
+      .getStatusCuadraturaDiaria(dateToQuery, this.perfilDelUsuario)
+      .subscribe(
+        (res: any) => {
+          if (res.status === 200 && res?.data) {
+            this.totalDiario = res.data.total_diario;
+            this.monto_total_diario = formatCLP(res.data.monto_total_diario);
+            this.aprobadosDiario = res.data.aprobados_diario;
+            this.monto_aprobados = formatCLP(res.data.monto_aprobados);
+            this.rechazadosDiario = res.data.rechazados_diario;
+            this.monto_rechazados = formatCLP(res.data.monto_rechazados);
+            this.reprocesadosDiario = res.data.reprocesados_diario;
+            this.monto_reprocesados = formatCLP(res.data.monto_reprocesados);
+          } else {
+            console.log('Error');
+          }
+        },
+        (err) => console.error('HTTP error', err)
+      );
   }
 
   RedirectTbkRegistros(tipo: string, tipoTransaccion: string, dateToQuery: Date) {
     this.viewModalRegistros = false;
     this.registrosTbk = [];
 
-    this.statusCuadraturaService.getRegistrosTbk(tipo, tipoTransaccion, dateToQuery).subscribe({
-      next: (res: any) => {
-        if (res.status === 200 && res.data) {
-          this.registrosTbk = res.data.map((r: any) => ({
-            ...r,
-            FECHA_ABONO: formatFechaTbk(r.FECHA_ABONO),
-            FECHA_VENTA: formatFechaTbk(r.FECHA_VENTA),
-            MONTO_TRANSACCION: formatCLP(r.MONTO_TRANSACCION),
-            ...(tipo === 'rechazados' && {
-              action: {
-                isAction: true,
-                //action: () => this.onReprocesar(r),
-                action: 'reprocesar',
-                label: 'Reprocesar',
-                color: 'warning',
-                class: 'text-light',
-              },
-            }),
-          }));
-          console.log('[Padre] registrosTbk después de map =>', this.registrosTbk);
-          this.viewModalRegistros = true;
-          this.notifier.notify('success', 'Cuadratura cargada');
-        } else {
+    this.statusCuadraturaService
+      .getRegistrosTbk(tipo, tipoTransaccion, dateToQuery, this.perfilDelUsuario)
+      .subscribe({
+        next: (res: any) => {
+          if (res.status === 200 && res.data) {
+            this.registrosTbk = res.data.map((r: any) => ({
+              ...r,
+              FECHA_ABONO: formatFechaTbk(r.FECHA_ABONO),
+              FECHA_VENTA: formatFechaTbk(r.FECHA_VENTA),
+              MONTO_TRANSACCION: formatCLP(r.MONTO_TRANSACCION),
+              ...(tipo === 'rechazados' && {
+                action: {
+                  isAction: true,
+                  //action: () => this.onReprocesar(r),
+                  action: 'reprocesar',
+                  label: 'Reprocesar',
+                  color: 'warning',
+                  class: 'text-light',
+                },
+              }),
+            }));
+            //console.log('[Padre] registrosTbk después de map =>', this.registrosTbk);
+            this.viewModalRegistros = true;
+            this.notifier.notify('success', 'Cuadratura cargada');
+          } else {
+            this.registrosTbk = [];
+            this.viewModalRegistros = false;
+            this.notifier.notify(
+              'warning',
+              'No se encontraron registros o hubo un problema con la respuesta.'
+            );
+          }
+        },
+        error: (err) => {
+          console.error('Error al obtener los registros:', err);
+          this.notifier.notify('error', 'Error al obtener los registros' + err);
           this.registrosTbk = [];
           this.viewModalRegistros = false;
-          this.notifier.notify(
-            'warning',
-            'No se encontraron registros o hubo un problema con la respuesta.'
-          );
-        }
-      },
-      error: (err) => {
-        console.error('Error al obtener los registros:', err);
-        this.notifier.notify('error', 'Error al obtener los registros' + err);
-        this.registrosTbk = [];
-        this.viewModalRegistros = false;
-        this.limpiarDatos();
-      },
-    });
+          this.limpiarDatos();
+        },
+      });
   }
 
   limpiarDatos() {

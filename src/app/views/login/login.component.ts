@@ -42,15 +42,18 @@ export class LoginComponent {
             console.log('Redirigiendo por rol:', currentRole);
 
             switch (currentRole) {
+              case 'ADMINISTRADOR':
+                this.router.navigate(['//status-cuadratura']);
+                break;
               case 'DAFE':
                 this.router.navigate(['/status-cuadratura']);
                 break;
               case 'TESORERIA':
-                this.router.navigate(['/liquidaciones']);
+                this.router.navigate(['/liquidacion/credito']);
                 break;
               // Agrega aquí los demás roles de tu sistema
               case 'CONTABILIDAD':
-                this.router.navigate(['/contabilidad']);
+                this.router.navigate(['/cartola-tbk/credito']);
                 break;
               default:
                 this.router.navigate(['/']); // Una ruta por defecto

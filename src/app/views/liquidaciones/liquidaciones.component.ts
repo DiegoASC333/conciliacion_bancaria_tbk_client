@@ -114,18 +114,14 @@ export class LiquidacionesComponent implements OnInit {
 
   validarContabilidad(): void {
     if (this.liquidacionesTbk.length === 0) {
-      // Podemos seguir usando liquidacionesTbk para la validación visual
       this.notifier.notify('warning', 'No hay transacciones para validar.');
       return;
     }
-
     this.estaValidando = true;
-
-    // Enviamos SOLO los parámetros. Asumimos que tienes el ID del usuario.
     const payload = {
       tipo: this.tipoBackend,
       fecha: this.selectedDate.toISOString().split('T')[0],
-      usuarioId: '19273978', // Reemplazar con el ID del usuario logueado
+      usuarioId: '19273978',
     };
 
     this.liquidacionService.validarLiquidaciones(payload).subscribe({
@@ -144,7 +140,11 @@ export class LiquidacionesComponent implements OnInit {
   }
 
   Exportar() {
-    const data = { tipo: this.tipoBackend };
+    const fechaStr = this.selectedDate.toISOString().split('T')[0];
+    const data = {
+      tipo: this.tipoBackend,
+      fecha: fechaStr,
+    };
 
     this.liquidacionService.exportarExcel(data).subscribe({
       next: (blob: Blob) => {

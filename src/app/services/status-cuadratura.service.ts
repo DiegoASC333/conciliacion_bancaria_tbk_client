@@ -10,9 +10,9 @@ export class StatusCuadraturaService {
   constructor(private http: HttpClient) {}
 
   private formatDateToAAMMDD(date: Date): string {
-    const year = date.getFullYear().toString().slice(-2); // Obtiene los últimos 2 dígitos del año
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() es 0-11, por eso +1. padStart asegura 2 dígitos.
-    const day = date.getDate().toString().padStart(2, '0'); // padStart asegura 2 dígitos.
+    const year = date.getFullYear().toString().slice(-2);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
 
     return `${year}${month}${day}`;
   }
@@ -34,8 +34,8 @@ export class StatusCuadraturaService {
     );
   }
 
-  reprocesarCupon(cupon: number) {
-    return this.http.post(`${this.apiUrl}/reproceso-cupon`, { cupon });
+  reprocesarCupon(cupon: number, id: number) {
+    return this.http.post(`${this.apiUrl}/reproceso-cupon`, { cupon, id });
   }
 
   enviarTesorería(data: any) {

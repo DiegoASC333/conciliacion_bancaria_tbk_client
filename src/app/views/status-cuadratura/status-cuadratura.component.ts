@@ -26,11 +26,12 @@ export class StatusCuadraturaComponent {
   viewModalRegistros: boolean = false;
   registrosTbk: any[] = [];
   cupon: number = 0;
+  id: number = 0;
   usuario: number = 19273978;
   selectedDate: Date = new Date();
   PendientesAnteriores: boolean = false;
   usuarioActual: User | null = null;
-  perfilDelUsuario: string | undefined;
+  perfilDelUsuario: string = '';
   //perfilDelUsuario: string = 'FICA'; //TODO: CAMBIAR ESTO CUANDO CONECTE LOGIN
 
   /**
@@ -49,6 +50,7 @@ export class StatusCuadraturaComponent {
     if (this.usuarioActual) {
       this.perfilDelUsuario = this.usuarioActual.perfil;
     }
+    console.log('usuario actual', this.usuarioActual);
     this.getStatusCuadraturaDiaria(this.selectedDate);
     this.ejecutarValidacionFechasAnteriores(this.selectedDate);
   }
@@ -106,7 +108,6 @@ export class StatusCuadraturaComponent {
                 },
               }),
             }));
-            //console.log('[Padre] registrosTbk después de map =>', this.registrosTbk);
             this.viewModalRegistros = true;
             this.notifier.notify('success', 'Cuadratura cargada');
           } else {
@@ -140,19 +141,23 @@ export class StatusCuadraturaComponent {
   }
 
   onReprocesar(item: any) {
-    console.log('[Padre] onReprocesar called', item);
     item.action.disabled = true;
 
     this.cupon = item.CUPON ?? null;
+    this.id = item.ID ?? null;
 
-    this.statusCuadraturaService.reprocesarCupon(this.cupon).subscribe({
-      next: () => {
+    this.statusCuadraturaService.reprocesarCupon(this.cupon, this.id).subscribe({
+      next: (response: any) => {
         this.notifier.notify('success', `Cupón ${this.cupon} reprocesado.`);
         this.registrosTbk = this.registrosTbk.filter((r) => r !== item);
         this.getStatusCuadraturaDiaria(this.selectedDate);
       },
-      error: () => {
+      error: (err: any) => {
         item.action.disabled = false;
+
+        const mensajeError = err.error?.message || 'Ocurrió un error inesperado.';
+
+        this.notifier.notify('error', `Error al reprocesar cupón ${this.cupon}: ${mensajeError}`);
       },
     });
   }
@@ -168,13 +173,17 @@ export class StatusCuadraturaComponent {
       return;
     }
 
-    const usuarioId = this.usuario || 'desconocido';
-
+    if (!this.usuarioActual) {
+      this.notifier.notify('error', 'Usuario no autenticado.');
+      return;
+    }
+    const usuarioId = this.usuarioActual.rut;
     const data = {
       usuarioId,
       observacion: 'Envío a tesorería desde aplicativo',
       fecha: this.selectedDate,
       totalDiario: this.monto_total_diario,
+      perfil: this.perfilDelUsuario,
     };
 
     this.statusCuadraturaService.enviarTesorería(data).subscribe({

@@ -19,7 +19,7 @@
 
 <ng-template #userDropdown>
   <span id="username"
-    ><strong>{{ user?.name ?? 'DAFE' }} {{ user?.lastname ?? '' }}</strong
+    ><strong>{{ user?.name ?? '' }} {{ user?.lastname ?? '' }}</strong
     ><br />{{ user?.role ?? '' | roleTranslate }}</span
   >
   <c-dropdown alignment="end" variant="nav-item">

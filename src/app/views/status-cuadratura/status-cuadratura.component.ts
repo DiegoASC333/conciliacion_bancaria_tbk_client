@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { StatusCuadraturaService } from '../../services/status-cuadratura.service';
 import { formatFechaTbk, formatCLP } from '../../utils/utils';
+import { AuthenticationService, User } from '../../services/authentication.service';
 
 @Component({
   selector: 'app-status-cuadratura',
@@ -19,11 +20,21 @@ export class StatusCuadraturaComponent {
   registrosTbk: any[] = [];
   cupon: number = 0;
   usuario: number = 19273978;
+  usuarioActual: User | null = null;
+  perfilDelUsuario: string | undefined;
 
-  constructor(private statusCuadraturaService: StatusCuadraturaService) {}
+  constructor(
+    private statusCuadraturaService: StatusCuadraturaService,
+    private authService: AuthenticationService
+  ) {}
 
   ngOnInit() {
     this.getStatusCuadraturaDiaria();
+    this.usuarioActual = this.authService.getCurrentUser();
+    if (this.usuarioActual) {
+      this.perfilDelUsuario = this.usuarioActual.perfil;
+    }
+    console.log('perfil', this.perfilDelUsuario);
   }
 
   getStatusCuadraturaDiaria() {

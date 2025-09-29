@@ -16,7 +16,7 @@ export const navItems: any = [
     menus: [
       {
         name: 'Liquidaciones',
-        url: '',
+        url: 'liquidacion',
         iconComponent: { name: 'cil-list' },
         children: [
           {
@@ -36,7 +36,7 @@ export const navItems: any = [
     menus: [
       {
         name: 'Cartola',
-        url: '',
+        url: 'cartola-tbk',
         iconComponent: { name: 'cil-list' },
         children: [
           {

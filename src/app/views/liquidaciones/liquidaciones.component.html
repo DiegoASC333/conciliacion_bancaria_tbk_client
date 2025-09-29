@@ -1,6 +1,33 @@
 <h1 class="mb-4">Liquidaciones {{ titulo }}</h1>
+<!-- <div class="d-flex justify-content-center">
+  <c-calendar
+    class="border rounded"
+    locale="en-US"
+    [startDate]="startDate"
+    (dateChange)="onDateSelected($event)"
+  />
+</div> -->
+
+<c-row>
+  <c-col lg="4">
+    <c-date-picker
+      locale="es"
+      format="dd MMMM yyyy"
+      closeOnSelect
+      [value]="selectedDate"
+      (dateChange)="onDateSelected($event)"
+    />
+  </c-col>
+  <c-col>
+    <div>
+      <button cButton color="primary" (click)="Exportar()">Exportar a excel</button>
+    </div>
+  </c-col>
+</c-row>
 
 <c-container fluid>
+  <!-- Tabla de liquidaciones -->
+  <app-custom-table [items]="liquidacionesTbk"></app-custom-table>
   <!-- Totales en formato horizontal -->
   <div *ngIf="totalesPorComercio?.length > 0" class="totales-horizontal mb-4">
     <table class="totales-table w-100">
@@ -9,8 +36,30 @@
         <tr>
           <th scope="row">Código de Comercio</th>
           <td *ngFor="let total of totalesPorComercio">
-            {{ total.CODIGO_COMERCIO }}
+            {{ total.NOMBRE_COMERCIO }}
           </td>
+        </tr>
+        <tr>
+          <th scope="row">Cuenta Corriente</th>
+          <td *ngFor="let cta of totalesPorComercio">
+            {{ cta.CUENTA_CORRIENTE }}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Banco</th>
+          <td *ngFor="let banco of totalesPorComercio">
+            {{ banco.BANCO }}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Cuenta Contable</th>
+          <td *ngFor="let cont of totalesPorComercio">
+            {{ cont.CUENTA_CONTABLE }}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Descripcion</th>
+          <td *ngFor="let des of totalesPorComercio">{{ des.DESCRIPCION }}</td>
         </tr>
 
         <!-- Fila de montos -->
@@ -20,15 +69,25 @@
             {{ total.TOTAL_MONTO | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
           </td>
         </tr>
+        <tr class="fw-bold">
+          <th scope="row">TOTAL GENERAL</th>
+          <td [attr.colspan]="totalesPorComercio.length" class="text-end">
+            {{ totalGeneral | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
-
-  <!-- Tabla de liquidaciones -->
-  <app-custom-table [items]="liquidacionesTbk"></app-custom-table>
-
   <!-- Botón -->
   <div class="mt-3">
-    <button cbutton color="primary">Validar a Contabilidad</button>
+    <button
+      cButton
+      color="primary"
+      (click)="validarContabilidad()"
+      [disabled]="estaValidando || liquidacionesTbk.length === 0"
+    >
+      <span *ngIf="!estaValidando">Validar a Contabilidad</span>
+      <span *ngIf="estaValidando">Validando...</span>
+    </button>
   </div>
 </c-container>

@@ -44,7 +44,7 @@
           <ng-template
             cTemplateId="tableData"
             let-columnName="columnName"
-            let-item="items"
+            let-item="item"
             let-tdContent="tdContent"
           >
             <ng-container *ngIf="tdContent?.isAction; else elseBlock">
@@ -54,8 +54,8 @@
                   cButton
                   size="sm"
                   id="{{ tdContent.id ?? '' }}"
-                  (click)="tdContent.action('rut')"
-                  color="{{ tdContent.color ?? 'primary' }}"
+                  (click)="onActionClick(item)"
+                  [color]="tdContent.color ?? 'primary'"
                 >
                   <svg cIcon *ngIf="tdContent.icon" name="{{ tdContent.icon }}"></svg>
 

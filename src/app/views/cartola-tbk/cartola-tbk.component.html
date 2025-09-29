@@ -5,19 +5,19 @@
       <c-date-range-picker
         [(startDate)]="startDate"
         [(endDate)]="endDate"
-        (startDateChange)="onDateChange()"
-        (endDateChange)="onDateChange()"
+        (startDateChange)="loadData()"
+        (endDateChange)="loadData()"
       />
     </c-col>
-    <c-col lg="3" class="d-flex align-items-center">
-      <button cButton color="primary" (click)="cargarCartola()" [disabled]="!startDate || !endDate">
-        Buscar
-      </button>
+    <c-col>
+      <div>
+        <button cButton color="primary" (click)="Exportar()">Exportar a excel</button>
+      </div>
     </c-col>
   </c-row>
-  <c-container>
-    <app-custom-table [items]="registrosTbk"></app-custom-table>
-  </c-container>
+
+  <app-custom-table [items]="registrosTbk"></app-custom-table>
+
   <!-- Totales -->
   <c-row>
     <c-col xs="4" class="pb-3">
@@ -25,7 +25,7 @@
         <table class="totales-table">
           <tbody>
             <tr>
-              <th scope="row">Saldo Estimado</th>
+              <th scope="row">Total abonado:</th>
               <td class="text-end">
                 {{ totalesTbk.saldoEstimado | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
               </td>
@@ -42,3 +42,10 @@
     </c-col>
   </c-row>
 </c-container>
+
+<app-detalle-registro
+  [visible]="modalHistorialRut"
+  [rut]="rutSeleccionado"
+  [modalHistorialRut]="modalHistorialRut"
+  (closeModal)="onCloseModal()"
+></app-detalle-registro>

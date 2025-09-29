@@ -1,0 +1,51 @@
+<c-modal
+  alignment="center"
+  id="modalHistorialRut"
+  backdrop="static"
+  [visible]="visible"
+  #modalXl
+  size="xl"
+  ><c-modal-header>
+    <h5 cModalTitle class="text-uppercase">Historial</h5>
+    <button class="custom-button-close-modal" cButtonClose (click)="close()"></button>
+  </c-modal-header>
+  <c-modal-body *ngIf="modalHistorialRut">
+    <c-row>
+      <c-col
+        ><label cLabel>Cupón</label><input cInput type="text" [value]="cupon" disabled
+      /></c-col>
+      <c-col
+        ><label cLabel>Nombre</label><input cInput type="text" [value]="nombre" disabled
+      /></c-col>
+      <c-col><label>Rut</label><input cInput type="text" [value]="rutCliente" disabled /></c-col>
+    </c-row>
+
+    <c-row>
+      <app-custom-table [items]="detallesRut"></app-custom-table>
+    </c-row>
+
+    <c-row>
+      <c-col>
+        <label cLabel>Total Abonado</label>
+        <input cInput type="text" [value]="totalAbonado | currency: 'CLP'" disabled />
+      </c-col>
+
+      <c-col>
+        <label cLabel>Saldo por cobrar</label>
+        <input cInput type="text" [value]="saldoPorCobrar | currency: 'CLP'" disabled />
+      </c-col>
+
+      <c-col>
+        <label cLabel>Venta por el total</label>
+        <input cInput type="text" [value]="ventaTotal | currency: 'CLP'" disabled />
+      </c-col>
+
+      <c-col>
+        <label cLabel>Cuotas restantes</label>
+        <input cInput type="text" [value]="cuotasRestantes" disabled />
+      </c-col>
+    </c-row>
+  </c-modal-body>
+
+  <c-modal-footer></c-modal-footer>
+</c-modal>

@@ -68,7 +68,7 @@ import { UtilsModule } from './utils/utils.module';
 //import { CrearUsuarioComponent } from './views/modal/crear-usuario/crear-usuario.component';
 //import { PermisosComponent } from './permisos/permisos.component';
 
-registerLocaleData(localeEsCl);
+registerLocaleData(localeEsCl, 'es');
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,

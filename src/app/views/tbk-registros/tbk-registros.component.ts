@@ -9,7 +9,7 @@ import { StatusCuadraturaService } from '../../services/status-cuadratura.servic
 export class TbkRegistrosComponent {
   title = 'Registros TBK';
   @Input() visible: boolean = false;
-  @Input() viewModalRegistros: boolean = false;
+  //@Input() viewModalRegistros: boolean = false;
   @Input() registrosTbk: any[] = [];
   @Input() columns: any[] = [];
   @Input() items: any[] = [];
@@ -20,6 +20,7 @@ export class TbkRegistrosComponent {
   constructor(private statusCuadraturaService: StatusCuadraturaService) {}
 
   onTablaAction(evt: { action: string; item: any }) {
+    console.log('[TbkRegistros] onTablaAction', evt);
     if (evt?.action === 'reprocesar') {
       this.reprocesar.emit(evt.item);
     }

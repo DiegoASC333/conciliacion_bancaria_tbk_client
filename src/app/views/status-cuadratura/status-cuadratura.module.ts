@@ -1,7 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconModule } from '@coreui/icons-angular';
-import { ButtonModule, GridModule, CardModule, ModalModule } from '@coreui/angular-pro';
+import {
+  ButtonModule,
+  GridModule,
+  CardModule,
+  DropdownModule,
+  SharedModule,
+  DatePickerModule,
+  ModalModule,
+} from '@coreui/angular-pro';
 import { TbkRegistrosModule } from '../tbk-registros/tbk-registros.module';
 import { StatusCuadraturaComponent } from './status-cuadratura.component';
 import { StatusCuadraturaRoutingModule } from './status-cuadratura-routing.module';
@@ -19,6 +27,9 @@ import { CustomTableModule } from '../components/custom-table/custom-table.modul
     TbkRegistrosModule,
     CustomTableModule,
     ModalModule,
+    DropdownModule,
+    SharedModule,
+    DatePickerModule,
   ],
   declarations: [StatusCuadraturaComponent, TbkRegistrosComponent],
   providers: [StatusCuadraturaService],

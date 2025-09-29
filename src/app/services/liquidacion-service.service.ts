@@ -12,4 +12,13 @@ export class LiquidacionServiceService {
   getLiquidacion(data: any) {
     return this.http.post(`${this.apiUrl}/liquidacion`, data);
   }
+  exportarExcel(data: any) {
+    return this.http.post(`${this.apiUrl}/liquidacion-excel`, data, {
+      responseType: 'blob',
+    });
+  }
+
+  validarLiquidaciones(payload: any) {
+    return this.http.post(`${this.apiUrl}/validar`, payload);
+  }
 }

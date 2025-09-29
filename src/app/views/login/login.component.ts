@@ -9,7 +9,7 @@ import { AuthenticationService } from 'src/app/services';
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
-  studentForm: FormGroup;
+  // studentForm: FormGroup;
   loginForm: FormGroup;
   formError = false;
   errorMessage = '';
@@ -23,84 +23,49 @@ export class LoginComponent {
     private formBuilder: FormBuilder,
     private rutValidator: RutValidator
   ) {
-    this.studentForm = this.formBuilder.group({
-      username: ['', [Validators.required, this.rutValidator]],
-    });
     this.loginForm = this.formBuilder.group({
-      username: ['', [Validators.required, this.rutValidator]],
+      rut: ['', [Validators.required, this.rutValidator]],
       password: ['', Validators.required],
     });
   }
 
-  doLogin(form: any) {
-    switch (form) {
-      case 0:
-        if (this.studentForm.valid) {
-          localStorage.setItem('cdp-role', 'student');
-          localStorage.setItem('cdp-student', this.studentForm.value.username);
-          this.router.navigate(['/inscripcion_practica']);
-        }
-        break;
-      default:
-        if (this.loginForm.valid) {
-          this.authenticationService.login(this.loginForm.value).subscribe(
-            (data: any) => {
-              this.authenticationService.saveToken(data.token);
-              if (this.authenticationService.getCurrentUser()!.force_password_update) {
-                this.router.navigate(['/settings']);
-              } else {
-                const currentRole = this.authenticationService.getCurrentUser()!.role;
-                switch (currentRole) {
-                  case 'Administrador':
-                    this.router.navigate(['/usuarios']);
-                    break;
-                  case 'Revisor(a)':
-                    this.router.navigate(['/historial']);
-                    break;
-                  case 'Asistente':
-                    this.router.navigate(['/ingresar/ayudantia-academica']);
-                    break;
-                  case 'Encargado(a) de aprobación':
-                    this.router.navigate(['/presupuesto']);
-                    break;
-                  case 'Asistente unidad superior':
-                    this.router.navigate(['/documentos-pendiente-firma']);
-                    break;
-                  case 'Decano(a)':
-                    this.router.navigate(['/documentos-pendiente-firma']);
-                    break;
-                  case 'Secretario(a) de Facultad':
-                    this.router.navigate(['/documentos-pendiente-firma']);
-                    break;
-                }
-              }
-            },
-            (error: any) => {
-              this.formError = true;
-              this.errorMessage =
-                'Ocurrió un error al acceder. Revise que los datos sean correctos e intente nuevamente.' +
-                '\nDetalles del error: ' +
-                error.message;
-            }
-          );
-        }
-        break;
-    }
-  }
+  doLogin() {
+    if (this.loginForm.valid) {
+      this.authenticationService.login(this.loginForm.value).subscribe({
+        next: (data: any) => {
+          this.authenticationService.saveLoginData(data);
 
-  showLogin(option: any) {
-    switch (option) {
-      case 0:
-        this.studentVisible = !this.studentVisible;
-        break;
-      case 1:
-        this.companyVisible = !this.companyVisible;
-        break;
-      case 2:
-        this.administratorVisible = !this.administratorVisible;
-        break;
-      default:
-        break;
+          const currentUser = this.authenticationService.getCurrentUser();
+
+          if (currentUser) {
+            const currentRole = currentUser.rol;
+            console.log('Redirigiendo por rol:', currentRole);
+
+            switch (currentRole) {
+              case 'DAFE':
+                this.router.navigate(['/status-cuadratura']);
+                break;
+              case 'TESORERIA':
+                this.router.navigate(['/liquidaciones']);
+                break;
+              // Agrega aquí los demás roles de tu sistema
+              case 'CONTABILIDAD':
+                this.router.navigate(['/contabilidad']);
+                break;
+              default:
+                this.router.navigate(['/']); // Una ruta por defecto
+                break;
+            }
+          } else {
+            this.formError = true;
+            this.errorMessage = 'No se pudo obtener la información del usuario tras el login.';
+          }
+        },
+        error: (error: any) => {
+          this.formError = true;
+          this.errorMessage = error.error?.message || 'Error de conexión. Intente nuevamente.';
+        },
+      });
     }
   }
 }

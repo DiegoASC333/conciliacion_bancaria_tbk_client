@@ -1,14 +1,19 @@
 import { INavData } from '@coreui/angular-pro';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const navItems: any = [
   {
+    role: 'DAFE',
     menus: [
       {
         name: 'Status Cuadratura',
         url: 'status-cuadratura',
         iconComponent: { name: 'cil-list' },
       },
+    ],
+  },
+  {
+    role: 'TESORERIA',
+    menus: [
       {
         name: 'Liquidaciones',
         url: '',
@@ -24,6 +29,11 @@ export const navItems: any = [
           },
         ],
       },
+    ],
+  },
+  {
+    role: 'CONTABILIDAD',
+    menus: [
       {
         name: 'Cartola',
         url: '',

@@ -44,6 +44,11 @@ export class AuthenticationService {
     return this.httpClient.post(`${this.baseURL}/login`, credentials);
   }
 
+  loginBack(rut: string) {
+    const body = { rut: rut };
+    return this.httpClient.post(`${this.baseURL}/login-back`, body);
+  }
+
   getCurrentUser(): User | null {
     const userString = localStorage.getItem('cdp-user');
     if (this.isLogged() && userString) {
@@ -63,5 +68,9 @@ export class AuthenticationService {
 
   getToken(): string | null {
     return localStorage.getItem('cdp-token');
+  }
+
+  saveToken(token: string) {
+    localStorage.setItem('cdp-token', token);
   }
 }

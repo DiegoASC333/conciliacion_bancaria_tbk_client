@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import {
+  Router,
+  CanActivate,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+  UrlTree,
+} from '@angular/router';
 import { AuthenticationService } from './authentication.service';
 
 @Injectable({
@@ -11,17 +17,16 @@ export class AuthGuardService implements CanActivate {
     private authenticationService: AuthenticationService
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
     const user = this.authenticationService.getCurrentUser();
-
-    if (user && user.activo === 1) {
-      // Si el usuario existe y está activo, permite el acceso
-      return true;
+    if (user === null) {
+      this.router.navigate(['/login']);
+      return false;
+    } else if (!user.activo) {
+      this.authenticationService.logout();
+      this.router.navigate(['/login']);
+      return false;
     }
-
-    // Para cualquier otro caso (no hay usuario, está inactivo, etc.)
-    this.authenticationService.logout(); // Limpiamos cualquier dato inconsistente
-    this.router.navigate(['/login']);
-    return false;
+    return true;
   }
 }

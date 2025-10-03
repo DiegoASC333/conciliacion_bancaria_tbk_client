@@ -9,6 +9,18 @@ import { AuthGuardService } from './services';
 const routes: Routes = [
   {
     path: '',
+    redirectTo: 'login',
+    pathMatch: 'full',
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+    data: {
+      title: 'Acceso al sistema',
+    },
+  },
+  {
+    path: '',
     component: DefaultLayoutComponent,
     data: {
       title: '',

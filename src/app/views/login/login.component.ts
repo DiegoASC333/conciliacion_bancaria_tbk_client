@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RutValidator } from 'ng9-rut';
-import { AuthenticationService } from 'src/app/services';
+import { AuthenticationService } from '../../services/authentication.service';
+import { SSOService } from '../../services/ssoservice.service';
+import { CheckRoleService } from '../../services/checkRole.service';
 
 @Component({
   selector: 'app-login',
@@ -19,14 +21,76 @@ export class LoginComponent {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
+    private ssoService: SSOService,
     private authenticationService: AuthenticationService,
     private formBuilder: FormBuilder,
-    private rutValidator: RutValidator
+    private rutValidator: RutValidator,
+    private checkRole: CheckRoleService
   ) {
     this.loginForm = this.formBuilder.group({
       rut: ['', [Validators.required, this.rutValidator]],
       password: ['', Validators.required],
     });
+  }
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(
+      (params) => {
+        if (params['id']) {
+          try {
+            sessionStorage.setItem('id', params['id']);
+            sessionStorage.setItem('sso', 'true');
+            sessionStorage.setItem('date', Date.now().toString());
+          } catch (error) {
+            console.log('sessionStorage error', error);
+          }
+        }
+      },
+      (error) => {
+        console.log('Error', error);
+      }
+    );
+    try {
+      if (this.checkSSOExpiration()) {
+        sessionStorage.clear();
+        this.ssoService.login();
+      } else if (sessionStorage.getItem('sso')) {
+        const id = sessionStorage.getItem('id') ?? '';
+        console.log('id antes de entrar al back', id);
+        this.authenticationService.loginBack(id).subscribe({
+          next: (response: any) => {
+            this.authenticationService.saveLoginData(response);
+          },
+          error: (err) => {
+            console.log(err);
+            //this.showMessage = true;
+          },
+          complete: () => {
+            console.log('Entraste');
+            this.router.navigate([this.checkRole.getDefaultRoute()]);
+          },
+        });
+      } else {
+        this.ssoService.login();
+      }
+    } catch (error) {
+      console.log('Error un SSO process', error);
+    }
+  }
+
+  checkSSOExpiration() {
+    const storedDate = sessionStorage.getItem('date');
+    if (storedDate !== null) {
+      const timeDifference = Date.now() - parseInt(storedDate);
+      const millisecondsInSecond = 1000;
+      const millisecondsInMinute = 60 * millisecondsInSecond;
+      const millisecondsInHour = 60 * millisecondsInMinute;
+      const millisecondsInDay = 24 * millisecondsInHour;
+      const minutes = Math.floor((timeDifference % millisecondsInHour) / millisecondsInMinute);
+      return minutes > 25 ? true : false;
+    }
+    return false;
   }
 
   doLogin() {

@@ -40,12 +40,12 @@ export class StatusCuadraturaService {
 
   enviarTesorería(data: any) {
     const fechaFormateada = this.formatDateToAAMMDD(data.fecha);
-
     const body = {
       usuarioId: data.usuarioId,
       observacion: data.observacion,
       fecha: fechaFormateada,
       totalDiario: data.totalDiario,
+      perfil: data.perfil,
     };
 
     return this.http.post(`${this.apiUrl}/auditoria-dafe`, body);

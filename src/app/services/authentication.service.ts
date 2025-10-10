@@ -4,7 +4,7 @@ import jwtDecode, { JwtPayload } from 'jwt-decode';
 import { environment } from '../../environments/environment';
 
 export interface User {
-  rut: number;
+  rut: string;
   rol: string;
   perfil: string;
   activo: number;
@@ -35,7 +35,6 @@ export class AuthenticationService {
       const payload = jwtDecode<JwtPayload>(token);
       return payload.exp! > Date.now() / 1000;
     } catch (error) {
-      console.error('Token inválido detectado. Previniendo error y retornando false.', error);
       return false; // ¡ESTE RETURN ES LA CLAVE!
     }
   }

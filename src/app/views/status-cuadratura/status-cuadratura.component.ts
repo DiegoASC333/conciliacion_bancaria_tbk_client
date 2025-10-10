@@ -27,7 +27,7 @@ export class StatusCuadraturaComponent {
   registrosTbk: any[] = [];
   cupon: number = 0;
   id: number = 0;
-  usuario: number = 19273978;
+  usuario: string = '';
   selectedDate: Date = new Date();
   PendientesAnteriores: boolean = false;
   usuarioActual: User | null = null;
@@ -49,8 +49,8 @@ export class StatusCuadraturaComponent {
     this.usuarioActual = this.authService.getCurrentUser();
     if (this.usuarioActual) {
       this.perfilDelUsuario = this.usuarioActual.perfil;
+      this.usuario = this.usuarioActual.rut;
     }
-    console.log('usuario actual', this.usuarioActual);
     this.getStatusCuadraturaDiaria(this.selectedDate);
     this.ejecutarValidacionFechasAnteriores(this.selectedDate);
   }

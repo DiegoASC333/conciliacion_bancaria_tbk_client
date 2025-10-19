@@ -2,15 +2,29 @@
 <c-container>
   <br />
   <h4>Diario</h4>
-  <c-col lg="4">
-    <c-date-picker
-      locale="es"
-      format="dd MMMM yyyy"
-      closeOnSelect
-      [value]="selectedDate"
-      (dateChange)="onDateChange($event)"
-    />
-  </c-col>
+  <c-row>
+    <c-col lg="4">
+      <c-date-picker
+        locale="es"
+        format="dd MMMM yyyy"
+        closeOnSelect
+        [value]="selectedDate"
+        (dateChange)="onDateChange($event)"
+      />
+    </c-col>
+    <c-col lg="4">
+      <button
+        cButton
+        color="primary"
+        textColor="white"
+        variant="outline"
+        [disabled]="rechazadosDiario > 0"
+        (click)="obtenerExcelCuadratura()"
+      >
+        Exportal a Excel
+      </button>
+    </c-col>
+  </c-row>
   <hr />
   <c-row class="align-items-start">
     <c-col>

@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { LiquidacionServiceService } from '../../services/liquidacion-service.service';
 import { formatCLP } from '../../utils/utils';
 import { NotifierService } from 'angular-notifier';
+import { AuthenticationService, User } from '../../services/authentication.service';
 
 @Component({
   selector: 'app-liquidaciones',
@@ -14,15 +15,19 @@ export class LiquidacionesComponent implements OnInit {
   titulo: string = '';
   liquidacionesTbk: any[] = [];
   totalesPorComercio: any[] = [];
+  totalesPorDocumento: any[] = [];
   totalGeneral: number = 0;
   tipoBackend: string = '';
   selectedDate: Date = new Date();
   estaValidando: boolean = false;
+  usuarioActual: User | null = null;
+  usuario: string = '';
 
   constructor(
     private route: ActivatedRoute,
     private liquidacionService: LiquidacionServiceService,
-    private notifier: NotifierService
+    private notifier: NotifierService,
+    private authService: AuthenticationService
   ) {}
 
   ngOnInit() {
@@ -33,6 +38,11 @@ export class LiquidacionesComponent implements OnInit {
         //this.loadLiquidaciones();
       }
     });
+    this.usuarioActual = this.authService.getCurrentUser();
+    if (this.usuarioActual) {
+      this.usuario = this.usuarioActual.rut;
+      console.log('Usuario actual:', this.usuarioActual.rut);
+    }
   }
 
   private setTipo(tipoUrl: string) {
@@ -58,6 +68,7 @@ export class LiquidacionesComponent implements OnInit {
   loadLiquidaciones() {
     this.liquidacionesTbk = [];
     this.totalesPorComercio = [];
+    this.totalesPorDocumento = [];
     this.totalGeneral = 0;
 
     if (!this.selectedDate) {
@@ -71,8 +82,6 @@ export class LiquidacionesComponent implements OnInit {
       tipo: this.tipoBackend,
       fecha: fechaStr,
     };
-
-    console.log('Enviando al backend:', { tipo: this.tipoBackend, fecha: fechaStr });
 
     this.liquidacionService.getLiquidacion(data).subscribe({
       next: (res: any) => {
@@ -88,6 +97,7 @@ export class LiquidacionesComponent implements OnInit {
           });
           this.notifier.notify('success', 'Liquidación cargada');
           this.totalesPorComercio = res.data.totales_por_comercio;
+          this.totalesPorDocumento = res.data.totales_por_documento;
           this.totalGeneral =
             this.totalesPorComercio?.length > 0
               ? this.totalesPorComercio.reduce(
@@ -105,8 +115,13 @@ export class LiquidacionesComponent implements OnInit {
       error: (err) => {
         this.liquidacionesTbk = [];
         this.totalesPorComercio = [];
+        this.totalesPorDocumento = [];
         this.totalGeneral = 0;
-        this.notifier.notify('error', 'Error al obtener liquidaciones desde el servidor', err);
+        if (err.status === 409 && err.error?.mensaje) {
+          this.notifier.notify('warning', err.error.mensaje);
+        } else {
+          this.notifier.notify('error', 'Error al obtener liquidaciones desde el servidor', err);
+        }
         console.error(err);
       },
     });
@@ -121,7 +136,7 @@ export class LiquidacionesComponent implements OnInit {
     const payload = {
       tipo: this.tipoBackend,
       fecha: this.selectedDate.toISOString().split('T')[0],
-      usuarioId: '19273978',
+      usuarioId: this.usuario,
     };
 
     this.liquidacionService.validarLiquidaciones(payload).subscribe({
@@ -173,6 +188,20 @@ export class LiquidacionesComponent implements OnInit {
         this.notifier.notify('success', 'Excel creado con exito');
       },
       error: (err) => {
+        if (err.error instanceof Blob) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            try {
+              const parsedError = JSON.parse(reader.result as string);
+              this.notifier.notify('warning', parsedError.mensaje);
+            } catch (e) {
+              this.notifier.notify('error', 'Error al procesar la respuesta del servidor.');
+            }
+          };
+          reader.readAsText(err.error);
+        } else {
+          this.notifier.notify('error', 'Error al exportar el archivo.');
+        }
         console.error('Error exportando Excel:', err);
       },
     });

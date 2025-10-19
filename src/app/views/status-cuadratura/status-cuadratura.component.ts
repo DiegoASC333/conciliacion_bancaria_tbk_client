@@ -221,4 +221,52 @@ export class StatusCuadraturaComponent {
       },
     });
   }
+
+  obtenerExcelCuadratura() {
+    if (this.rechazadosDiario > 0) {
+      this.notifier.notify('warning', 'No se puede exportar si existen registros con conflictos');
+    }
+
+    if (this.aprobadosDiario === 0) {
+      this.notifier.notify('info', 'No hay registros para exportar');
+    }
+
+    const fechaStr = this.selectedDate.toISOString().split('T')[0];
+
+    const data = {
+      perfil: this.perfilDelUsuario,
+      fecha: fechaStr,
+    };
+
+    this.statusCuadraturaService.exportarExcel(data).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+
+        const now = new Date();
+        const fecha = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+          2,
+          '0'
+        )}-${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(
+          2,
+          '0'
+        )}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(
+          2,
+          '0'
+        )}`;
+
+        a.download = `cuadratura_${this.perfilDelUsuario}_${fecha}.xlsx`;
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        this.notifier.notify('success', 'Excel creado con exito');
+      },
+      error: (err) => {
+        console.error('Error exportando Excel:', err);
+      },
+    });
+  }
 }

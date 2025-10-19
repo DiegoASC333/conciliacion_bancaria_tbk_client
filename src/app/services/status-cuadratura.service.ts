@@ -52,7 +52,7 @@ export class StatusCuadraturaService {
   }
 
   exportarExcel(data: any) {
-    return this.http.post(`${this.apiUrl}/cuadratura-excel`, data, {
+    return this.http.post(`${this.apiUrl}/exportar-excel-completo`, data, {
       responseType: 'blob',
     });
   }

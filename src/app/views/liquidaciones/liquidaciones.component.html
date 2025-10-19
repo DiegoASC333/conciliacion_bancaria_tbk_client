@@ -77,6 +77,29 @@
         </tr>
       </tbody>
     </table>
+
+    <table class="table table-bordered table-striped w-50" *ngIf="totalesPorDocumento.length > 0">
+      <thead>
+        <tr>
+          <th>Tipo de Documento</th>
+          <th class="text-end">Monto Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let totalDoc of totalesPorDocumento">
+          <td>{{ totalDoc.TIPO_DOCUMENTO }}</td>
+          <td class="text-end">
+            {{ totalDoc.TOTAL_MONTO | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
+          </td>
+        </tr>
+        <tr class="fw-bold">
+          <td>TOTAL GENERAL</td>
+          <td class="text-end">
+            {{ totalGeneral | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
   <!-- Botón -->
   <div class="mt-3">

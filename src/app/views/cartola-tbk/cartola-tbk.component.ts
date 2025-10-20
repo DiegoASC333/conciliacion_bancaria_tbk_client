@@ -76,12 +76,14 @@ export class CartolaTbkComponent implements OnInit {
           if (Array.isArray(res.data.detalle_transacciones)) {
             this.registrosTbk = res.data.detalle_transacciones.map((r: any) => ({
               ...r,
+              /*
               action: {
                 isAction: true,
                 icon: 'cil-history',
                 color: 'info',
                 action: () => this.abrirHistorialRut(r.RUT),
               },
+              */
               FECHA_VENTA: formatFechaAny(r.FECHA_VENTA),
               FECHA_ABONO: formatFechaAny(r.FECHA_ABONO),
               MONTO: formatCLP(r.MONTO),

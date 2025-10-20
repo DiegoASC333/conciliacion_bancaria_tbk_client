@@ -92,22 +92,34 @@ export class StatusCuadraturaComponent {
       .subscribe({
         next: (res: any) => {
           if (res.status === 200 && res.data) {
-            this.registrosTbk = res.data.map((r: any) => ({
-              ...r,
-              FECHA_ABONO: formatFechaTbk(r.FECHA_ABONO),
-              FECHA_VENTA: formatFechaTbk(r.FECHA_VENTA),
-              MONTO_TRANSACCION: formatCLP(r.MONTO_TRANSACCION),
-              ...(tipo === 'rechazados' && {
-                action: {
-                  isAction: true,
-                  //action: () => this.onReprocesar(r),
-                  action: 'reprocesar',
-                  label: 'Reprocesar',
-                  color: 'warning',
-                  class: 'text-light',
-                },
-              }),
-            }));
+            this.registrosTbk = res.data.map((r: any) => {
+              // Sacamos la propiedad ESTADO y nos quedamos con el resto
+              const { ESTADO, ...restoDelObjeto } = r;
+
+              return {
+                ...restoDelObjeto, // Esparcimos el objeto ya sin la propiedad ESTADO
+                FECHA_ABONO: formatFechaTbk(r.FECHA_ABONO),
+                FECHA_VENTA: formatFechaTbk(r.FECHA_VENTA),
+                MONTO_TRANSACCION: formatCLP(r.MONTO_TRANSACCION),
+                ...(tipo === 'rechazados' && {
+                  // La lógica condicional todavía usa el ESTADO del objeto original 'r'
+                  action:
+                    r.ESTADO === 'REPROCESO'
+                      ? {
+                          isAction: true,
+                          action: 'reprocesar',
+                          label: 'Reprocesar',
+                          color: 'warning',
+                          class: 'text-light',
+                        }
+                      : {
+                          isAction: true,
+                          label: 'No disponible reproceso',
+                          color: 'secondary',
+                        },
+                }),
+              };
+            });
             this.viewModalRegistros = true;
             this.notifier.notify('success', 'Cuadratura cargada');
           } else {

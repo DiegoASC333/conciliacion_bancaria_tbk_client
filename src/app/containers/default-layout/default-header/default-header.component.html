@@ -18,10 +18,11 @@
 <!--</c-header>-->
 
 <ng-template #userDropdown>
-  <span id="username"
-    ><strong>{{ user?.name ?? '' }} {{ user?.lastname ?? '' }}</strong
-    ><br />{{ user?.role ?? '' | roleTranslate }}</span
-  >
+  <span id="username">
+    <strong> {{ usuario }} </strong>
+    <br />
+    {{ rol }} - {{ perfilDelUsuario ?? '' | roleTranslate }}
+  </span>
   <c-dropdown alignment="end" variant="nav-item">
     <a href [caret]="false" cDropdownToggle class="py-0">
       <c-avatar cTextColor="primary" shape="rounded-1" size="md" src="{{ profilePicture }}">

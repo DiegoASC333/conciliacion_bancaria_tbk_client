@@ -94,7 +94,7 @@ export class StatusCuadraturaComponent {
           if (res.status === 200 && res.data) {
             this.registrosTbk = res.data.map((r: any) => {
               // Sacamos la propiedad ESTADO y nos quedamos con el resto
-              const { ESTADO, ...restoDelObjeto } = r;
+              const { ESTADO, TIPO_DOCUMENTO_SAP, ...restoDelObjeto } = r;
 
               return {
                 ...restoDelObjeto, // Esparcimos el objeto ya sin la propiedad ESTADO
@@ -158,10 +158,16 @@ export class StatusCuadraturaComponent {
     this.cupon = item.CUPON ?? null;
     this.id = item.ID ?? null;
 
+    if (this.cupon === null || this.id === null) {
+      this.notifier.notify('error', 'El ítem no tiene CUPON o ID válidos.');
+      item.action.disabled = false;
+      return;
+    }
+
     this.statusCuadraturaService.reprocesarCupon(this.cupon, this.id).subscribe({
       next: (response: any) => {
         this.notifier.notify('success', `Cupón ${this.cupon} reprocesado.`);
-        this.registrosTbk = this.registrosTbk.filter((r) => r !== item);
+        this.registrosTbk = this.registrosTbk.filter((r) => r.ID !== this.id);
         this.getStatusCuadraturaDiaria(this.selectedDate);
       },
       error: (err: any) => {
@@ -194,7 +200,7 @@ export class StatusCuadraturaComponent {
       usuarioId,
       observacion: 'Envío a tesorería desde aplicativo',
       fecha: this.selectedDate,
-      totalDiario: this.monto_total_diario,
+      totalDiario: this.monto_aprobados,
       perfil: this.perfilDelUsuario,
     };
 

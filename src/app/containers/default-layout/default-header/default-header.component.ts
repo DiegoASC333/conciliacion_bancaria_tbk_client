@@ -3,7 +3,7 @@ import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { ClassToggleService, HeaderComponent } from '@coreui/angular-pro';
-import { AuthenticationService } from 'src/app/services/authentication.service';
+import { AuthenticationService, User } from '../../../services/authentication.service';
 
 @Component({
   selector: 'app-default-header',
@@ -20,6 +20,10 @@ export class DefaultHeaderComponent extends HeaderComponent {
   });
 
   user: any;
+  usuario: string = '';
+  rol: string = '';
+  usuarioActual: User | null = null;
+  perfilDelUsuario: string = '';
 
   constructor(
     private classToggler: ClassToggleService,
@@ -27,7 +31,17 @@ export class DefaultHeaderComponent extends HeaderComponent {
     private router: Router
   ) {
     super();
-    this.user = this.authenticationService.getCurrentUser();
+    //this.user = this.authenticationService.getCurrentUser();
+  }
+
+  ngOnInit() {
+    this.usuarioActual = this.authenticationService.getCurrentUser();
+    if (this.usuarioActual) {
+      console.log(this.usuarioActual);
+      this.perfilDelUsuario = this.usuarioActual.perfil;
+      this.usuario = this.usuarioActual.rut;
+      this.rol = this.usuarioActual.rol;
+    }
   }
 
   setTheme(value: string): void {

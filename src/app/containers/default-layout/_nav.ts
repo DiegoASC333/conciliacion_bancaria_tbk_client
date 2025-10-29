@@ -29,6 +29,21 @@ export const navItems: any = [
           },
         ],
       },
+      {
+        name: 'Cartola',
+        url: 'cartola-tbk',
+        iconComponent: { name: 'cil-list' },
+        children: [
+          {
+            name: 'Crédito',
+            url: 'cartola-tbk/credito',
+          },
+          {
+            name: 'Débito',
+            url: 'cartola-tbk/debito',
+          },
+        ],
+      },
     ],
   },
   {

@@ -34,8 +34,12 @@ export class CustomTableComponent {
   icons = { cilArrowRight, cilX };
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['items'] && this.items.length > 0 && this.columns.length === 0) {
-      this.columns = this.generateColumnsFromItems(this.items);
+    if (changes['items']) {
+      if (this.items && this.items.length > 0) {
+        this.columns = this.generateColumnsFromItems(this.items);
+      } else if (!this.items || this.items.length === 0) {
+        this.columns = [];
+      }
     }
   }
 
@@ -79,13 +83,23 @@ export class CustomTableComponent {
   }
 
   onActionClick(item: any) {
-    //const act = item?.action?.name ?? ''; // por defecto
-    const act = item?.action?.action ?? ''; // ahora lee bien
-    console.log('[CustomTable] onActionClick', { act, item });
-    if (!act) {
-      console.warn('[CustomTable] acción vacía en item', item);
-      return;
+    const act = item?.action?.action;
+
+    console.log('[CustomTable] onActionClick, item:', item);
+    console.log('[CustomTable] Contenido de la acción:', act);
+
+    if (typeof act === 'function') {
+      console.log('[CustomTable] La acción es una función, ejecutando...');
+      try {
+        act();
+      } catch (e) {
+        console.error('Error al ejecutar la acción desde CustomTable', e);
+      }
+    } else if (typeof act === 'string') {
+      console.log('[CustomTable] La acción es un string, emitiendo...', act);
+      this.action.emit({ action: act, item });
+    } else {
+      console.warn('[CustomTable] acción no válida o vacía en item', item);
     }
-    this.action.emit({ action: act, item });
   }
 }

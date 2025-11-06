@@ -1,20 +1,5 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { DetalleRegistroService } from '../../services/detalle-registro.service';
-
-interface HistorialItem {
-  cupon_Credito: number;
-  rut: string;
-  fecha_venta: string;
-  fecha_abono: string;
-  cuota_pagada: number;
-  TOTAL_CUOTAS: number;
-  monto: number;
-  nombre: string;
-  cuotas_restantes: number;
-  deuda_pagada: number;
-  deuda_por_pagar: number;
-}
-
 @Component({
   selector: 'app-detalle-registro',
   templateUrl: './detalle-registro.component.html',
@@ -23,16 +8,19 @@ interface HistorialItem {
 export class DetalleRegistroComponent {
   @Input() rut!: string;
   @Input() tipo!: string;
+  @Input() cuota!: number;
+  @Input() cupon!: string;
   @Input() modalHistorialRut: boolean = false;
   @Input() visible: boolean = false;
   @Output() closeModal: EventEmitter<void> = new EventEmitter();
   @Output() reprocesar = new EventEmitter<any>();
   detallesRut: any[] = [];
 
-  cupon: any;
+  //cupon: string;
   nombre: string = '';
   rutCliente: string = '';
   totalAbonado: number = 0;
+  fechaVenta: string = '';
   saldoPorCobrar: number = 0;
   ventaTotal: number = 0;
   cuotasRestantes: number = 0;
@@ -42,50 +30,91 @@ export class DetalleRegistroComponent {
   ngOnInit() {}
 
   ngOnChanges(changes: SimpleChanges) {
-    // Cuando se abra el modal y tengamos rut definido
-    if (changes['modalHistorialRut'] && this.modalHistorialRut && this.rut) {
-      this.cargarDataRut({ rut: this.rut, tipo: this.tipo });
+    if (changes['modalHistorialRut']) {
+      if (this.modalHistorialRut === true) {
+        const shouldLoad = !!this.rut && !!this.cupon && !!this.tipo;
+
+        if (shouldLoad) {
+          this.cargarDataRut({
+            rut: this.rut,
+            cupon: this.cupon,
+            tipo: this.tipo,
+          });
+        } else {
+          console.warn('HIJO: Modal abierto pero faltan datos (rut, cupon, o tipo).');
+        }
+      } else {
+        this.resetInternalState();
+      }
     }
   }
 
-  cargarDataRut(data: { rut: string; tipo: string }) {
-    this.detalleRegistroService.getDataHistorialMock(data).subscribe(
-      (res: HistorialItem[]) => {
-        if (!res || res.length === 0) {
+  cargarDataRut(data: { rut: string; cupon: string; tipo: string }) {
+    this.detalleRegistroService.getDataHistorial(data).subscribe({
+      next: (res: any) => {
+        if (res && res.success && res.status === 200 && Array.isArray(res.data)) {
+          const historial: any[] = res.data;
+
+          if (historial.length === 0) {
+            this.detallesRut = [];
+            return;
+          }
+
+          this.detallesRut = historial.map((item: any) => {
+            const estaPagada = item.CUOTA_PAGADA <= this.cuota;
+            return {
+              'Fecha abono': item.FECHA_ABONO,
+              'Monto Cuota': item.MONTO,
+              'Cuota pagada': item.CUOTA_PAGADA,
+              'Total cuotas': item.TOTAL_CUOTAS,
+              PAGADO: estaPagada ? 'SI' : 'NO',
+            };
+          });
+
+          const primer = historial[0];
+
+          this.nombre = primer.NOMBRE;
+          this.rutCliente = primer.RUT;
+          this.fechaVenta = primer.FECHA_VENTA;
+
+          const montoCuota = primer.MONTO;
+          const totalCuotas = primer.TOTAL_CUOTAS;
+
+          this.ventaTotal = montoCuota * totalCuotas;
+          this.cuotasRestantes = totalCuotas - this.cuota;
+          this.totalAbonado = montoCuota * this.cuota;
+          this.saldoPorCobrar = this.cuotasRestantes * montoCuota;
+        } else {
           this.detallesRut = [];
-          return;
         }
-
-        // Mapeamos solo las columnas que van a la tabla y renombramos para headers
-        this.detallesRut = res.map((item: HistorialItem) => ({
-          'Fecha abono': item.fecha_abono,
-          'Fecha venta': item.fecha_venta,
-          'Cuota pagada': item.cuota_pagada,
-          'Total cuotas': item.TOTAL_CUOTAS,
-        }));
-
-        const primer = res[0];
-        this.cupon = primer.cupon_Credito;
-        this.nombre = primer.nombre;
-        this.rutCliente = primer.rut;
-
-        this.totalAbonado = res.reduce((acc: number, r: HistorialItem) => acc + r.deuda_pagada, 0);
-        this.saldoPorCobrar = res.reduce(
-          (acc: number, r: HistorialItem) => acc + r.deuda_por_pagar,
-          0
-        );
-        this.ventaTotal = res.reduce((acc: number, r: HistorialItem) => acc + r.monto, 0);
-        this.cuotasRestantes = res.reduce(
-          (acc: number, r: HistorialItem) => acc + r.cuotas_restantes,
-          0
-        );
       },
-      (err) => console.error('HTTP error', err)
-    );
+      error: (err) => {
+        this.detallesRut = [];
+        console.error('Error al cargar historial', err);
+      },
+    });
+  }
+
+  resetInternalState() {
+    this.detallesRut = [];
+    this.nombre = '';
+    this.rutCliente = '';
+    this.totalAbonado = 0;
+    this.saldoPorCobrar = 0;
+    this.ventaTotal = 0;
+    this.cuotasRestantes = 0;
+    this.fechaVenta = '';
   }
 
   close() {
     this.closeModal.emit();
-    this.detallesRut = [];
+    // this.detallesRut = [];
+    // this.nombre = '';
+    // this.rutCliente = '';
+    // this.totalAbonado = 0;
+    // this.saldoPorCobrar = 0;
+    // this.ventaTotal = 0;
+    // this.cuotasRestantes = 0;
+    // this.cuota = 0;
   }
 }

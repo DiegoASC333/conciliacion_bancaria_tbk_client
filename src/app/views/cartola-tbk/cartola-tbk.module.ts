@@ -10,7 +10,11 @@ import {
   DropdownModule,
   SharedModule,
   ModalModule,
+  WidgetModule,
+  SpinnerModule,
+  LoadingButtonModule,
 } from '@coreui/angular-pro';
+
 import { CartolaTbkComponent } from './cartola-tbk.component';
 import { CustomTableModule } from '../components/custom-table/custom-table.module';
 import { CartolaTbkRoutingModule } from './cartola-tbk-routing.module';
@@ -33,6 +37,9 @@ import { DetalleRegistroComponent } from '../detalle-registro/detalle-registro.c
     DropdownModule,
     SharedModule,
     DetalleRegistroModule,
+    SpinnerModule,
+    WidgetModule,
+    LoadingButtonModule,
   ],
   declarations: [CartolaTbkComponent, DetalleRegistroComponent],
   providers: [CartolaTbkService],

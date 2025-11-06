@@ -9,43 +9,66 @@
         (endDateChange)="loadData()"
       />
     </c-col>
-    <c-col>
-      <div>
-        <button cButton color="primary" (click)="Exportar()">Exportar a excel</button>
-      </div>
-    </c-col>
   </c-row>
 
-  <app-custom-table [items]="registrosTbk"></app-custom-table>
+  <ng-container *ngIf="!isLoading; else loadingTemplate">
+    <c-row class="mb-3" *ngIf="!isLoading && registrosTbk && registrosTbk.length > 0">
+      <c-col>
+        <div>
+          <button
+            cLoadingButton
+            [loading]="isExporting"
+            disabledOnLoading
+            cButton
+            color="primary"
+            (click)="Exportar()"
+          >
+            Exportar a excel
+          </button>
+        </div>
+      </c-col>
+    </c-row>
 
-  <!-- Totales -->
-  <c-row>
-    <c-col xs="4" class="pb-3">
-      <div *ngIf="totalesTbk" class="totales-horizontal mt-4">
-        <table class="totales-table">
-          <tbody>
-            <tr>
-              <th scope="row">Total abonado:</th>
-              <td class="text-end">
-                {{ totalesTbk.saldoEstimado | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
-              </td>
-            </tr>
-            <tr>
-              <th scope="row">Saldo por Cobrar</th>
-              <td class="text-end">
-                {{ totalesTbk.saldoPorCobrar | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </c-col>
-  </c-row>
+    <app-custom-table [items]="registrosTbk"></app-custom-table>
+
+    <c-row *ngIf="totalesTbk" class="mt-4">
+      <c-col sm="6" lg="4" *ngIf="totalesTbk.saldoEstimado > 0">
+        <c-widget-stat-a class="mb-3" color="success" title="Total Abonado">
+          <ng-template cTemplateId="widgetValueTemplate">
+            <span class="fs-4">
+              {{ totalesTbk.saldoEstimado | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
+            </span>
+          </ng-template>
+        </c-widget-stat-a>
+      </c-col>
+
+      <c-col sm="6" lg="4" *ngIf="totalesTbk.saldoPorCobrar > 0">
+        <c-widget-stat-a class="mb-3" color="warning" title="Saldo por Cobrar">
+          <ng-template cTemplateId="widgetValueTemplate">
+            <span class="fs-4">
+              {{ totalesTbk.saldoPorCobrar | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
+            </span>
+          </ng-template>
+        </c-widget-stat-a>
+      </c-col>
+    </c-row>
+  </ng-container>
+  <ng-template #loadingTemplate>
+    <c-row class="text-center justify-content-center py-5">
+      <c-col xs="auto">
+        <c-spinner aria-hidden="true" size="lg"></c-spinner>
+      </c-col>
+    </c-row>
+  </ng-template>
 </c-container>
 
+<!-- padre.component.html -->
 <app-detalle-registro
   [visible]="modalHistorialRut"
-  [rut]="rutSeleccionado"
   [modalHistorialRut]="modalHistorialRut"
+  [rut]="rutSeleccionado"
+  [cupon]="cuponSeleccionado"
+  [cuota]="cuota"
+  [tipo]="tipoBackend"
   (closeModal)="onCloseModal()"
 ></app-detalle-registro>

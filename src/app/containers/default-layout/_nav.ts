@@ -71,4 +71,49 @@ export const navItems: any = [
       },
     ],
   },
+  {
+    role: 'ADMINISTRADOR',
+    menus: [
+      {
+        name: 'Status Cuadratura',
+        url: 'status-cuadratura',
+        iconComponent: { name: 'cil-list' },
+      },
+      {
+        name: 'Liquidaciones',
+        url: 'liquidacion',
+        iconComponent: { name: 'cil-list' },
+        children: [
+          {
+            name: 'Crédito',
+            url: '/liquidacion/credito',
+          },
+          {
+            name: 'Débito',
+            url: '/liquidacion/debito',
+          },
+        ],
+      },
+      {
+        name: 'Cartola',
+        url: 'cartola-tbk',
+        iconComponent: { name: 'cil-list' },
+        children: [
+          {
+            name: 'Crédito',
+            url: 'cartola-tbk/credito',
+          },
+          {
+            name: 'Débito',
+            url: 'cartola-tbk/debito',
+          },
+        ],
+      },
+      {
+        name: 'Contabilidad',
+        url: 'archivos-contabilidad',
+        iconComponent: { name: 'cil-list' },
+      },
+    ],
+  },
 ];

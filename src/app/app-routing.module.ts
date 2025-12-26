@@ -67,6 +67,18 @@ const routes: Routes = [
             (m) => m.ArchivosContabilidadModule
           ),
       },
+      {
+        path: 'descarga-excel',
+        loadChildren: () =>
+          import('./views/descarga-excel/descarga-excel.module').then((m) => m.DescargaExcelModule),
+      },
+      {
+        path: 'saldo-pendiente',
+        loadChildren: () =>
+          import('./views/saldo-pendiente/saldo-pendiente.module').then(
+            (m) => m.SaldoPendienteModule
+          ),
+      },
     ],
   },
   {

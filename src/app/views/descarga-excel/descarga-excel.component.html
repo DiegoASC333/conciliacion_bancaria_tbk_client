@@ -1,0 +1,102 @@
+<h1>Descarga Legacy</h1>
+<div>
+  <c-card class="mb-4">
+    <c-card-header>
+      <strong>Selección de Período</strong>
+    </c-card-header>
+    <c-card-body>
+      <c-row>
+        <c-label cCol sm="3" for="selectMonth"> Seleccionar Mes: </c-label>
+        <c-col sm="5">
+          <input
+            cInput
+            type="month"
+            id="selectMonth"
+            class="form-control"
+            [(ngModel)]="mesSeleccionado"
+          />
+        </c-col>
+        <c-col sm="4">
+          <button cButton color="primary" (click)="cargarDatosDelMes()">Cargar Datos</button>
+        </c-col>
+      </c-row>
+    </c-card-body>
+  </c-card>
+</div>
+<div class="table-responsive">
+  <table class="table table-bordered table-striped text-center">
+    <thead class="thead-dark">
+      <tr>
+        <th>Fecha</th>
+        <th>Transacción</th>
+
+        <th *ngFor="let header of headersCodigosDinamicos">{{ header }}</th>
+
+        <th>Total</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+
+    <tbody *ngFor="let dia of totalesAgrupados">
+      <tr>
+        <td [rowSpan]="3" style="vertical-align: middle">
+          <strong>{{ dia.fecha }}</strong>
+        </td>
+
+        <td [rowSpan]="2" style="vertical-align: middle">Débito</td>
+
+        <td
+          *ngFor="let h of headersCodigosDinamicos; let i = index"
+          style="vertical-align: top; text-align: left"
+        >
+          <div *ngIf="dia.debito.comercios[i] as comercio; else noComercio">
+            <div>
+              <strong>{{ comercio.codigo }}</strong>
+            </div>
+            <div>
+              <small>{{ comercio.nombre }}</small>
+            </div>
+          </div>
+          <ng-template #noComercio>-</ng-template>
+        </td>
+
+        <td [rowSpan]="2" style="vertical-align: middle">
+          <strong>{{ dia.debito.total | number }}</strong>
+        </td>
+
+        <td [rowSpan]="3" style="vertical-align: middle">
+          <button cButton class="btn btn-success" (click)="descargarExcel(dia)">
+            Descargar Excel
+          </button>
+        </td>
+      </tr>
+
+      <tr class="fila-montos-debito">
+        <td *ngFor="let h of headersCodigosDinamicos; let i = index">
+          <div *ngIf="dia.debito.comercios[i] as comercio; else noMonto">
+            {{ comercio.total | number }}
+          </div>
+          <ng-template #noMonto>-</ng-template>
+        </td>
+      </tr>
+
+      <tr>
+        <td>Crédito</td>
+
+        <td [attr.colspan]="headersCodigosDinamicos.length" style="text-align: center">-</td>
+
+        <td>
+          <strong>{{ dia.credito.total | number }}</strong>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- <c-pagination
+    [pages]="totalPaginas"
+    [activePage]="paginaActual"
+    (activePageChange)="onPageChange($event)"
+    align="center"
+  >
+  </c-pagination> -->
+</div>

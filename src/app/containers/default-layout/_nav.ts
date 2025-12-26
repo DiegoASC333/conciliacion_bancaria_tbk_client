@@ -69,6 +69,16 @@ export const navItems: any = [
         url: 'archivos-contabilidad',
         iconComponent: { name: 'cil-list' },
       },
+      {
+        name: 'Descarga Excel',
+        url: 'descarga-excel',
+        iconComponent: { name: 'cil-list' },
+      },
+      {
+        name: 'Saldo Pendiente',
+        url: 'saldo-pendiente',
+        iconComponent: { name: 'cil-list' },
+      },
     ],
   },
   {
@@ -112,6 +122,16 @@ export const navItems: any = [
       {
         name: 'Contabilidad',
         url: 'archivos-contabilidad',
+        iconComponent: { name: 'cil-list' },
+      },
+      {
+        name: 'Descarga Excel',
+        url: 'descarga-excel',
+        iconComponent: { name: 'cil-list' },
+      },
+      {
+        name: 'Saldo Pendiente',
+        url: 'saldo-pendiente',
         iconComponent: { name: 'cil-list' },
       },
     ],

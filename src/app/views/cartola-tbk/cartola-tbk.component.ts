@@ -16,7 +16,8 @@ export class CartolaTbkComponent implements OnInit {
   registrosTbk: any[] = [];
   startDate: Date | null = null;
   endDate: Date | null = null;
-  totalesTbk: { saldoEstimado: number; saldoPorCobrar: number } | null = null;
+  totalesTbk: { saldoEstimado: number; saldoPorCobrar: number; saldoTotalVentas: number } | null =
+    null;
   rutSeleccionado: string = '';
   cuponSeleccionado: string = '';
   modalHistorialRut: boolean = false;
@@ -24,6 +25,7 @@ export class CartolaTbkComponent implements OnInit {
   isLoading: boolean = false;
   private isInitialLoad: boolean = true;
   isExporting: boolean = false;
+  totalesPorDocumento: any[] = [];
 
   /**
    * @param {NotifierService} notifier - Servicio para mostrar notificaciones.
@@ -36,9 +38,9 @@ export class CartolaTbkComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe((params) => {
-      // 1. Limpia los datos al cambiar la URL para evitar que se "peguen"
       this.registrosTbk = [];
       this.totalesTbk = null;
+      this.totalesPorDocumento = [];
 
       const p = params['tipo'];
       if (p === 'credito') {
@@ -95,6 +97,7 @@ export class CartolaTbkComponent implements OnInit {
                 FECHA_ABONO: formatFechaAny(r.FECHA_ABONO),
                 RUT: r.RUT,
                 CUPON: r.CUPON,
+                CODIGO_AUTORIZACION: r.CODIGO_AUTORIZACION,
                 TIPO_DOCUMENTO: r.TIPO_DOCUMENTO,
               };
               if (this.tipo === 'LCN') {
@@ -113,11 +116,13 @@ export class CartolaTbkComponent implements OnInit {
                 };
               } else if (this.tipo === 'LDN') {
                 record.MONTO_ABONADO = formatCLP(r.MONTO);
+                record.PENDIENTE_POR_COBRAR = formatCLP(r.DEUDA_POR_PAGAR);
               }
               return record;
             });
 
             this.notifier.notify('success', 'Cartola cargada');
+            this.cargarTotalesPorDocumento();
           } else {
             this.notifier.notify('warning', 'No existen datos asociados al periodo seleccionado');
             this.registrosTbk = [];
@@ -125,9 +130,11 @@ export class CartolaTbkComponent implements OnInit {
 
           if (Array.isArray(res.data.totales) && res.data.totales.length > 0) {
             this.totalesTbk = {
-              saldoEstimado: res.data.totales[0].SALDO_ESTIMADO,
-              saldoPorCobrar: res.data.totales[0].SALDO_POR_COBRAR,
+              saldoEstimado: res.data.totales[0].saldo_estimado,
+              saldoPorCobrar: res.data.totales[0].saldo_por_cobrar,
+              saldoTotalVentas: res.data.totales[0].saldo_total_ventas,
             };
+            console.log(this.totalesTbk);
           } else {
             this.totalesTbk = null;
           }
@@ -161,6 +168,27 @@ export class CartolaTbkComponent implements OnInit {
 
   onDateChange() {
     this.loadData();
+  }
+
+  cargarTotalesPorDocumento() {
+    const data: any = {
+      tipo: this.tipo,
+      start: this.toOracleStr(this.startDate),
+      end: this.toOracleStr(this.endDate),
+    };
+    this.cartolaTbkSerive.getTotalesCartolaPorDocumento(data).subscribe({
+      next: (res: any) => {
+        if (res.status === 200 && res.data) {
+          this.totalesPorDocumento = res.data;
+        } else {
+          this.totalesPorDocumento = [];
+        }
+      },
+      error: (err: any) => {
+        this.totalesPorDocumento = [];
+        this.notifier.notify('error', 'Error cargando totales por documento', err);
+      },
+    });
   }
 
   abrirHistorialRut(r: any) {

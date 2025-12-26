@@ -18,4 +18,8 @@ export class CartolaTbkService {
       responseType: 'blob',
     });
   }
+
+  getTotalesCartolaPorDocumento(data: any) {
+    return this.http.post(`${this.apiUrl}/totales-documento-cartola`, data);
+  }
 }

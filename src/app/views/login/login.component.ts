@@ -67,7 +67,6 @@ export class LoginComponent {
             //this.showMessage = true;
           },
           complete: () => {
-            console.log('Entraste');
             this.router.navigate([this.checkRole.getDefaultRoute()]);
           },
         });
@@ -103,8 +102,6 @@ export class LoginComponent {
 
           if (currentUser) {
             const currentRole = currentUser.rol;
-            console.log('Redirigiendo por rol:', currentRole);
-
             switch (currentRole) {
               case 'ADMINISTRADOR':
                 this.router.navigate(['//status-cuadratura']);

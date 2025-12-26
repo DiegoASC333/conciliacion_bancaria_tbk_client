@@ -32,8 +32,17 @@
     <app-custom-table [items]="registrosTbk"></app-custom-table>
 
     <c-row *ngIf="totalesTbk" class="mt-4">
+      <c-col sm="6" lg="4" *ngIf="totalesTbk.saldoTotalVentas > 0">
+        <c-widget-stat-a class="mb-3" color="info" title="Total Ventas">
+          <ng-template cTemplateId="widgetValueTemplate">
+            <span class="fs-4">
+              {{ totalesTbk.saldoTotalVentas | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
+            </span>
+          </ng-template>
+        </c-widget-stat-a>
+      </c-col>
       <c-col sm="6" lg="4" *ngIf="totalesTbk.saldoEstimado > 0">
-        <c-widget-stat-a class="mb-3" color="success" title="Total Abonado">
+        <c-widget-stat-a class="mb-3" color="success" title="Total Abonos">
           <ng-template cTemplateId="widgetValueTemplate">
             <span class="fs-4">
               {{ totalesTbk.saldoEstimado | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
@@ -50,6 +59,53 @@
             </span>
           </ng-template>
         </c-widget-stat-a>
+      </c-col>
+    </c-row>
+    <c-row class="mt-4" *ngIf="totalesPorDocumento && totalesPorDocumento.length > 0">
+      <c-col>
+        <c-card class="shadow border-0">
+          <c-card-body class="p-0">
+            <table cTable hover bordered striped responsive class="mb-0 align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" class="p-3 text-dark fw-bold">Tipo Documento</th>
+                  <th scope="col" class="p-3 text-end text-dark fw-bold">Saldo Estimado</th>
+                  <th scope="col" class="p-3 text-end text-dark fw-bold">Saldo por Cobrar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of totalesPorDocumento">
+                  <td class="p-3">
+                    <div class="d-flex align-items-center">
+                      <span
+                        class="d-inline-block rounded-circle me-2"
+                        [ngClass]="
+                          item.TIPO_DOCUMENTO.includes('Débito') ? 'bg-info' : 'bg-success'
+                        "
+                        style="width: 8px; height: 8px"
+                      >
+                      </span>
+                      <span class="fw-semibold">{{ item.TIPO_DOCUMENTO }}</span>
+                    </div>
+                  </td>
+                  <td class="p-3 text-end font-monospace text-primary">
+                    {{ item.SALDO_ESTIMADO | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
+                  </td>
+                  <td class="p-3 text-end font-monospace">
+                    <span
+                      [ngClass]="{
+                        'text-danger fw-bold': item.SALDO_POR_COBRAR > 0,
+                        'text-muted opacity-50': item.SALDO_POR_COBRAR === 0,
+                      }"
+                    >
+                      {{ item.SALDO_POR_COBRAR | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </c-card-body>
+        </c-card>
       </c-col>
     </c-row>
   </ng-container>

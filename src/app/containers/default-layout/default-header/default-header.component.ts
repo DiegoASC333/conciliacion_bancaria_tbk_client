@@ -37,7 +37,6 @@ export class DefaultHeaderComponent extends HeaderComponent {
   ngOnInit() {
     this.usuarioActual = this.authenticationService.getCurrentUser();
     if (this.usuarioActual) {
-      console.log(this.usuarioActual);
       this.perfilDelUsuario = this.usuarioActual.perfil;
       this.usuario = this.usuarioActual.rut;
       this.rol = this.usuarioActual.rol;

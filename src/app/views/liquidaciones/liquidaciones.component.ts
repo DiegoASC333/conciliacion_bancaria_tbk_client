@@ -41,7 +41,6 @@ export class LiquidacionesComponent implements OnInit {
     this.usuarioActual = this.authService.getCurrentUser();
     if (this.usuarioActual) {
       this.usuario = this.usuarioActual.rut;
-      console.log('Usuario actual:', this.usuarioActual.rut);
     }
   }
 
@@ -137,12 +136,13 @@ export class LiquidacionesComponent implements OnInit {
       tipo: this.tipoBackend,
       fecha: this.selectedDate.toISOString().split('T')[0],
       usuarioId: this.usuario,
+      totalGeneral: this.totalGeneral,
     };
 
     this.liquidacionService.validarLiquidaciones(payload).subscribe({
       next: (response) => {
         this.notifier.notify('success', `Liquidaciones validadas y guardadas.`);
-        this.loadLiquidaciones(); // Recargar para limpiar y mostrar el estado actualizado
+        this.loadLiquidaciones();
       },
       error: (err) => {
         this.notifier.notify('error', err.error.mensaje || 'Ocurrió un error al validar.');

@@ -19,7 +19,6 @@ export class StatusCuadraturaService {
 
   getStatusCuadraturaDiaria(fecha: Date, perfilDelUsuario: string) {
     const fechaFormateada = this.formatDateToAAMMDD(fecha);
-    console.log('fechaFormateada', fechaFormateada);
     return this.http.get(`${this.apiUrl}/status-cuadratura/${fechaFormateada}/${perfilDelUsuario}`);
   }
 

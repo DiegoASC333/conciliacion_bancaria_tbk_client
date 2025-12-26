@@ -20,7 +20,6 @@ export class TbkRegistrosComponent {
   constructor(private statusCuadraturaService: StatusCuadraturaService) {}
 
   onTablaAction(evt: { action: string; item: any }) {
-    console.log('[TbkRegistros] onTablaAction', evt);
     if (evt?.action === 'reprocesar') {
       this.reprocesar.emit(evt.item);
     }

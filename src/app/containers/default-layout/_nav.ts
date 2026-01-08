@@ -7,7 +7,22 @@ export const navItems: any = [
       {
         name: 'Status Cuadratura',
         url: 'status-cuadratura',
-        iconComponent: { name: 'cil-list' },
+        iconComponent: { name: 'cil-calculator' },
+      },
+      {
+        name: 'Ventas',
+        url: 'ventas-tbk',
+        iconComponent: { name: 'cil-credit-card' },
+        children: [
+          {
+            name: 'Crédito',
+            url: 'ventas-tbk/credito',
+          },
+          {
+            name: 'Débito',
+            url: 'ventas-tbk/debito',
+          },
+        ],
       },
     ],
   },
@@ -32,7 +47,7 @@ export const navItems: any = [
       {
         name: 'Cartola',
         url: 'cartola-tbk',
-        iconComponent: { name: 'cil-list' },
+        iconComponent: { name: 'cil-history' },
         children: [
           {
             name: 'Crédito',
@@ -44,6 +59,21 @@ export const navItems: any = [
           },
         ],
       },
+      {
+        name: 'Ventas',
+        url: 'ventas-tbk',
+        iconComponent: { name: 'cil-credit-card' },
+        children: [
+          {
+            name: 'Crédito',
+            url: 'ventas-tbk/credito',
+          },
+          {
+            name: 'Débito',
+            url: 'ventas-tbk/debito',
+          },
+        ],
+      },
     ],
   },
   {
@@ -52,7 +82,7 @@ export const navItems: any = [
       {
         name: 'Cartola',
         url: 'cartola-tbk',
-        iconComponent: { name: 'cil-list' },
+        iconComponent: { name: 'cil-history' },
         children: [
           {
             name: 'Crédito',
@@ -67,17 +97,32 @@ export const navItems: any = [
       {
         name: 'Contabilidad',
         url: 'archivos-contabilidad',
-        iconComponent: { name: 'cil-list' },
+        iconComponent: { name: 'cil-paperclip' },
       },
       {
         name: 'Descarga Excel',
         url: 'descarga-excel',
-        iconComponent: { name: 'cil-list' },
+        iconComponent: { name: 'cil-cloud-download' },
       },
       {
         name: 'Saldo Pendiente',
         url: 'saldo-pendiente',
-        iconComponent: { name: 'cil-list' },
+        iconComponent: { name: 'cil-tags' },
+      },
+      {
+        name: 'Ventas',
+        url: 'ventas-tbk',
+        iconComponent: { name: 'cil-credit-card' },
+        children: [
+          {
+            name: 'Crédito',
+            url: 'ventas-tbk/credito',
+          },
+          {
+            name: 'Débito',
+            url: 'ventas-tbk/debito',
+          },
+        ],
       },
     ],
   },
@@ -87,12 +132,12 @@ export const navItems: any = [
       {
         name: 'Status Cuadratura',
         url: 'status-cuadratura',
-        iconComponent: { name: 'cil-list' },
+        iconComponent: { name: 'cil-calculator' },
       },
       {
         name: 'Liquidaciones',
         url: 'liquidacion',
-        iconComponent: { name: 'cil-list' },
+        iconComponent: { name: 'cil-dollar' },
         children: [
           {
             name: 'Crédito',
@@ -107,7 +152,7 @@ export const navItems: any = [
       {
         name: 'Cartola',
         url: 'cartola-tbk',
-        iconComponent: { name: 'cil-list' },
+        iconComponent: { name: 'cil-history' },
         children: [
           {
             name: 'Crédito',
@@ -122,17 +167,42 @@ export const navItems: any = [
       {
         name: 'Contabilidad',
         url: 'archivos-contabilidad',
-        iconComponent: { name: 'cil-list' },
+        iconComponent: { name: 'cil-paperclip' },
       },
       {
         name: 'Descarga Excel',
         url: 'descarga-excel',
-        iconComponent: { name: 'cil-list' },
+        iconComponent: { name: 'cil-cloud-download' },
       },
       {
         name: 'Saldo Pendiente',
         url: 'saldo-pendiente',
-        iconComponent: { name: 'cil-list' },
+        iconComponent: { name: 'cil-tags' },
+        children: [
+          {
+            name: 'Crédito',
+            url: 'saldo-pendiente/credito',
+          },
+          {
+            name: 'Débito',
+            url: 'saldo-pendiente/debito',
+          },
+        ],
+      },
+      {
+        name: 'Ventas',
+        url: 'ventas-tbk',
+        iconComponent: { name: 'cil-credit-card' },
+        children: [
+          {
+            name: 'Crédito',
+            url: 'ventas-tbk/credito',
+          },
+          {
+            name: 'Débito',
+            url: 'ventas-tbk/debito',
+          },
+        ],
       },
     ],
   },

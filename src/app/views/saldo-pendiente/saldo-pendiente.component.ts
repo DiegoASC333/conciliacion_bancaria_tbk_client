@@ -16,6 +16,9 @@ interface TotalesDocumento {
   styleUrls: ['./saldo-pendiente.component.scss'],
 })
 export class SaldoPendienteComponent {
+  tipo: string = '';
+  titulo: string = '';
+  tipoBackend: string = '';
   selectedDate: Date = new Date();
   saldosPendientes: any[] = [];
   totalPendiente: number = 0;
@@ -26,7 +29,28 @@ export class SaldoPendienteComponent {
     private route: ActivatedRoute,
     private notifier: NotifierService
   ) {}
-  ngOnInit() {}
+
+  ngOnInit() {
+    this.route.params.subscribe((params) => {
+      this.saldosPendientes = [];
+
+      const p = params['tipo'];
+      if (p === 'credito') {
+        this.tipo = 'LCN';
+        this.titulo = 'Crédito';
+        this.tipoBackend = 'LCN';
+      } else if (p === 'debito') {
+        this.tipo = 'LDN';
+        this.titulo = 'Débito';
+        this.tipoBackend = 'LDN';
+      } else {
+        this.tipo = '';
+        this.titulo = '';
+      }
+
+      //this.loadData();
+    });
+  }
 
   onDateSelected(event: Date | null) {
     if (!event) return;
@@ -44,6 +68,7 @@ export class SaldoPendienteComponent {
     const fechaStrBackend = `${dia}${mes}${anio}`;
 
     const data = {
+      tipo: this.tipoBackend,
       fecha: fechaStrBackend,
     };
 

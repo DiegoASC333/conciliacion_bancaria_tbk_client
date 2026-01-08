@@ -122,7 +122,7 @@ export class CartolaTbkComponent implements OnInit {
             });
 
             this.notifier.notify('success', 'Cartola cargada');
-            this.cargarTotalesPorDocumento();
+            //this.cargarTotalesPorDocumento();
           } else {
             this.notifier.notify('warning', 'No existen datos asociados al periodo seleccionado');
             this.registrosTbk = [];
@@ -134,7 +134,6 @@ export class CartolaTbkComponent implements OnInit {
               saldoPorCobrar: res.data.totales[0].saldo_por_cobrar,
               saldoTotalVentas: res.data.totales[0].saldo_total_ventas,
             };
-            console.log(this.totalesTbk);
           } else {
             this.totalesTbk = null;
           }

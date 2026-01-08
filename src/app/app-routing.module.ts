@@ -73,11 +73,16 @@ const routes: Routes = [
           import('./views/descarga-excel/descarga-excel.module').then((m) => m.DescargaExcelModule),
       },
       {
-        path: 'saldo-pendiente',
+        path: 'saldo-pendiente/:tipo',
         loadChildren: () =>
           import('./views/saldo-pendiente/saldo-pendiente.module').then(
             (m) => m.SaldoPendienteModule
           ),
+      },
+      {
+        path: 'ventas-tbk/:tipo',
+        loadChildren: () =>
+          import('./views/reporte-venta/reporte-venta.module').then((m) => m.ReporteVentaModule),
       },
     ],
   },

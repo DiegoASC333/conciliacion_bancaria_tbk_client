@@ -1,4 +1,4 @@
-<h1>Saldo pendiente</h1>
+<h1>Saldo Pendiente {{ tipo }}</h1>
 
 <c-row>
   <c-col lg="4">
@@ -11,48 +11,74 @@
     />
   </c-col>
 </c-row>
-<div>
-  <app-custom-table [items]="saldosPendientes"></app-custom-table>
-</div>
+<ng-container *ngIf="!isLoading; else loadingTemplate">
+  <br />
+  <c-row class="mb-3" *ngIf="!isLoading && saldosPendientes && saldosPendientes.length > 0">
+    <c-col>
+      <div>
+        <button
+          cLoadingButton
+          [loading]="isExporting"
+          disabledOnLoading
+          cButton
+          color="primary"
+          (click)="Exportar()"
+        >
+          Exportar a excel
+        </button>
+      </div>
+    </c-col>
+  </c-row>
+  <div class="mb-4">
+    <app-custom-table [items]="saldosPendientes"></app-custom-table>
+  </div>
 
-<c-row>
-  <c-col sm="6" lg="4" *ngIf="totalPendiente > 0">
-    <c-widget-stat-a class="mb-3" color="warning" title="Saldo Pendiente">
-      <span class="fs-4">{{ totalPendiente | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}</span>
+  <c-row>
+    <c-col sm="6" lg="4" *ngIf="totalPendiente > 0">
+      <c-widget-stat-a class="mb-3" color="warning" title="Saldo Pendiente">
+        <span class="fs-4">{{ totalPendiente | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}</span>
 
-      <ng-template cTemplateId="widgetValueTemplate">
-        <span class="fs-4">
-          {{ totalPendiente | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
-        </span>
-      </ng-template>
-    </c-widget-stat-a>
-  </c-col>
-</c-row>
-<c-row class="mb-4" *ngIf="totalesDocumento.length > 0">
-  <c-col lg="6">
-    <h3>Resumen por Tipo de Documento</h3>
-    <table cTable striped>
-      <thead>
-        <tr>
-          <th>Tipo de Documento</th>
-          <th class="text-end">Deuda Pendiente</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of totalesDocumento">
-          <td>
-            <c-badge color="warning">{{ item.tipo }}</c-badge>
-          </td>
-          <td class="text-end">
-            <strong>{{
-              item.total_deuda_pendiente | currency: 'CLP' : 'symbol-narrow' : '1.0-0'
-            }}</strong>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div *ngIf="totalesDocumento.length === 0 && totalPendiente > 0" class="alert alert-info">
-      No se encontraron agrupaciones por Tipo de Documento.
-    </div>
-  </c-col>
-</c-row>
+        <ng-template cTemplateId="widgetValueTemplate">
+          <span class="fs-4">
+            {{ totalPendiente | currency: 'CLP' : 'symbol-narrow' : '1.0-0' }}
+          </span>
+        </ng-template>
+      </c-widget-stat-a>
+    </c-col>
+  </c-row>
+  <c-row class="mb-4" *ngIf="totalesDocumento.length > 0">
+    <c-col lg="6">
+      <h3>Resumen por Tipo de Documento</h3>
+      <table cTable striped>
+        <thead>
+          <tr>
+            <th>Tipo de Documento</th>
+            <th class="text-end">Deuda Pendiente</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of totalesDocumento">
+            <td>
+              <c-badge color="warning">{{ item.tipo }}</c-badge>
+            </td>
+            <td class="text-end">
+              <strong>{{
+                item.total_deuda_pendiente | currency: 'CLP' : 'symbol-narrow' : '1.0-0'
+              }}</strong>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="totalesDocumento.length === 0 && totalPendiente > 0" class="alert alert-info">
+        No se encontraron agrupaciones por Tipo de Documento.
+      </div>
+    </c-col>
+  </c-row>
+</ng-container>
+<ng-template #loadingTemplate>
+  <c-row class="text-center justify-content-center py-5">
+    <c-col xs="auto">
+      <c-spinner aria-hidden="true" size="lg"></c-spinner>
+    </c-col>
+  </c-row>
+</ng-template>

@@ -7,6 +7,7 @@ import {
   CardModule,
   LoadingButtonModule,
   PaginationModule,
+  SpinnerModule,
 } from '@coreui/angular-pro';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DescargaExcelComponent } from './descarga-excel.component';
@@ -27,6 +28,7 @@ import { DescargaExcelService } from '../../services/descarga-excel.service';
     PaginationModule,
     FormsModule,
     ReactiveFormsModule,
+    SpinnerModule,
   ],
   declarations: [DescargaExcelComponent],
   providers: [DescargaExcelService],

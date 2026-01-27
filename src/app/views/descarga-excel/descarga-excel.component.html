@@ -65,8 +65,22 @@
         </td>
 
         <td [rowSpan]="3" style="vertical-align: middle">
-          <button cButton class="btn btn-success" (click)="descargarExcel(dia)">
-            Descargar Excel
+          <button
+            cButton
+            class="btn btn-success"
+            (click)="descargarExcel(dia)"
+            [disabled]="isLoading"
+          >
+            <ng-container *ngIf="isLoading; else textoBoton">
+              <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+              ></span>
+              Descargando...
+            </ng-container>
+
+            <ng-template #textoBoton> Descargar Excel </ng-template>
           </button>
         </td>
       </tr>

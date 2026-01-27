@@ -8,6 +8,7 @@ export interface User {
   rol: string;
   perfil: string;
   activo: number;
+  nombre: string;
 }
 
 @Injectable({

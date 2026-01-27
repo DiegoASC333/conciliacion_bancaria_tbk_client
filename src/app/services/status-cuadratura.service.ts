@@ -62,4 +62,9 @@ export class StatusCuadraturaService {
       `${this.apiUrl}/cuadratura/validacion/fechas-anteriores/${fechaFormateada}`
     );
   }
+
+  obtenerTotalesSdFica(fecha: Date): Observable<any> {
+    const fechaFormateada = this.formatDateToAAMMDD(fecha);
+    return this.http.get(`${this.apiUrl}/totales-informativos/${fechaFormateada}`);
+  }
 }

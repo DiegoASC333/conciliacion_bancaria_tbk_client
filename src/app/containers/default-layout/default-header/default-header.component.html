@@ -19,7 +19,7 @@
 
 <ng-template #userDropdown>
   <span id="username">
-    <strong> {{ usuario }} </strong>
+    <strong> {{ nombre ?? 'Nombre no disponible' }} </strong>
     <br />
     {{ rol }} - {{ perfilDelUsuario ?? '' | roleTranslate }}
   </span>

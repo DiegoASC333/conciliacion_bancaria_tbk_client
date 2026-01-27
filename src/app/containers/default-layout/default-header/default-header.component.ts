@@ -22,6 +22,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
   user: any;
   usuario: string = '';
   rol: string = '';
+  nombre: string = '';
   usuarioActual: User | null = null;
   perfilDelUsuario: string = '';
 
@@ -40,6 +41,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
       this.perfilDelUsuario = this.usuarioActual.perfil;
       this.usuario = this.usuarioActual.rut;
       this.rol = this.usuarioActual.rol;
+      this.nombre = this.usuarioActual.nombre;
     }
   }
 

@@ -18,6 +18,12 @@ export class StatusCuadraturaComponent {
   monto_rechazados: string = '';
   monto_reprocesados: string = '';
   monto_total_diario: string = '';
+  totalSD: number = 0;
+  montoSD: number = 0;
+  totalFICA: number = 0;
+  montoFICA: number = 0;
+  infoTotales: any = null;
+  cargandoTotales: boolean = false;
   tipo: string = '';
   tipoTransaccion: string = '';
   columns: any[] = [];
@@ -32,6 +38,7 @@ export class StatusCuadraturaComponent {
   PendientesAnteriores: boolean = false;
   usuarioActual: User | null = null;
   perfilDelUsuario: string = '';
+  isProcessing = false;
   //perfilDelUsuario: string = 'FICA'; //TODO: CAMBIAR ESTO CUANDO CONECTE LOGIN
 
   /**
@@ -53,12 +60,14 @@ export class StatusCuadraturaComponent {
     }
     this.getStatusCuadraturaDiaria(this.selectedDate);
     this.ejecutarValidacionFechasAnteriores(this.selectedDate);
+    this.obtenetTotalesSdFica(this.selectedDate);
   }
 
   onDateChange(newDate: Date) {
     this.selectedDate = newDate;
     this.getStatusCuadraturaDiaria(newDate);
     this.ejecutarValidacionFechasAnteriores(newDate);
+    this.obtenetTotalesSdFica(newDate);
   }
 
   getStatusCuadraturaDiaria(dateToQuery: Date) {
@@ -150,32 +159,51 @@ export class StatusCuadraturaComponent {
     this.monto_rechazados = formatCLP(0);
     this.reprocesadosDiario = 0;
     this.monto_reprocesados = formatCLP(0);
+    this.infoTotales = null;
+    this.totalSD = 0;
+    this.montoSD = 0;
+    this.totalFICA = 0;
+    this.montoFICA = 0;
   }
 
   onReprocesar(item: any) {
-    item.action.disabled = true;
-
-    this.cupon = item.CUPON ?? null;
-    this.id = item.ID ?? null;
-
-    if (this.cupon === null || this.id === null) {
-      this.notifier.notify('error', 'El ítem no tiene CUPON o ID válidos.');
-      item.action.disabled = false;
+    // 1. Bloqueo de seguridad: Evita múltiples clics en el mismo o diferentes ítems
+    if (this.isProcessing) {
+      this.notifier.notify('warning', 'Hay un proceso en curso. Por favor, espera a que termine.');
       return;
     }
 
-    this.statusCuadraturaService.reprocesarCupon(this.cupon, this.id).subscribe({
+    // 2. Extraemos los valores necesarios
+    const cupon = item.CUPON ?? null;
+    const id = item.ID ?? null;
+
+    if (cupon === null || id === null) {
+      this.notifier.notify('error', 'El ítem no tiene CUPON o ID válidos.');
+      return;
+    }
+
+    this.isProcessing = true;
+    item.action.disabled = true;
+
+    this.notifier.notify('info', 'Procesando solicitud... por favor no vuelva a hacer clic.');
+
+    this.statusCuadraturaService.reprocesarCupon(cupon, id).subscribe({
       next: (response: any) => {
-        this.notifier.notify('success', `Cupón ${this.cupon} reprocesado.`);
-        this.registrosTbk = this.registrosTbk.filter((r) => r.ID !== this.id);
+        // ÉXITO
+        this.notifier.notify('success', `Cupón ${cupon} reprocesado correctamente.`);
+        this.registrosTbk = this.registrosTbk.filter((r) => r.ID !== id);
         this.getStatusCuadraturaDiaria(this.selectedDate);
+        this.obtenetTotalesSdFica(this.selectedDate);
+
+        // Liberamos el bloqueo
+        this.isProcessing = false;
       },
       error: (err: any) => {
+        const mensajeError = err.error?.message || 'Ocurrió un error inesperado al procesar.';
+        this.notifier.notify('error', `Error: ${mensajeError}`);
+
         item.action.disabled = false;
-
-        const mensajeError = err.error?.message || 'Ocurrió un error inesperado.';
-
-        this.notifier.notify('error', `Error al reprocesar cupón ${this.cupon}: ${mensajeError}`);
+        this.isProcessing = false;
       },
     });
   }
@@ -209,6 +237,7 @@ export class StatusCuadraturaComponent {
         this.notifier.notify('success', res.message || 'Registros enviados a tesorería.');
 
         this.getStatusCuadraturaDiaria(this.selectedDate);
+        this.obtenetTotalesSdFica(this.selectedDate);
       },
       error: (err) => {
         console.error(err);
@@ -284,6 +313,37 @@ export class StatusCuadraturaComponent {
       },
       error: (err) => {
         console.error('Error exportando Excel:', err);
+      },
+    });
+  }
+
+  obtenetTotalesSdFica(dateToQuery: Date) {
+    this.cargandoTotales = true;
+
+    this.statusCuadraturaService.obtenerTotalesSdFica(dateToQuery).subscribe({
+      next: (res: any) => {
+        // Validamos que la respuesta sea exitosa y traiga data
+        if (res.success && res.data) {
+          this.infoTotales = res.data;
+
+          // Asignación segura con fallback a 0
+          this.totalSD = res.data.sd?.total || 0;
+          this.montoSD = res.data.sd?.monto || 0;
+
+          this.totalFICA = res.data.fica?.total || 0;
+          this.montoFICA = res.data.fica?.monto || 0;
+
+          //this.notifier.notify('success', 'Totales informativos cargados correctamente');
+        } else {
+          this.limpiarDatos();
+        }
+        this.cargandoTotales = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar totales informativos', err);
+        this.limpiarDatos();
+        this.cargandoTotales = false;
+        this.notifier.notify('error', 'Error al cargar totales informativos' + err);
       },
     });
   }

@@ -9,6 +9,7 @@ import {
   PaginationModule,
   DatePickerModule,
   WidgetModule,
+  SpinnerModule,
 } from '@coreui/angular-pro';
 import { SaldoPendienteComponent } from './saldo-pendiente.component';
 import { CustomTableModule } from '../components/custom-table/custom-table.module';
@@ -28,6 +29,7 @@ import { SaldoPendienteService } from '../../services/saldo-pendiente.service';
     PaginationModule,
     DatePickerModule,
     WidgetModule,
+    SpinnerModule,
   ],
   declarations: [SaldoPendienteComponent],
   providers: [SaldoPendienteService],

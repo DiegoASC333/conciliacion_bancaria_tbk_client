@@ -19,10 +19,12 @@ export class SaldoPendienteComponent {
   tipo: string = '';
   titulo: string = '';
   tipoBackend: string = '';
-  selectedDate: Date = new Date();
+  selectedDate!: Date; // O selectedDate: Date | null = null;
   saldosPendientes: any[] = [];
   totalPendiente: number = 0;
   totalesDocumento: TotalesDocumento[] = [];
+  isLoading: boolean = false;
+  isExporting: boolean = false;
 
   constructor(
     private saldoPentiente: SaldoPendienteService,
@@ -32,39 +34,48 @@ export class SaldoPendienteComponent {
 
   ngOnInit() {
     this.route.params.subscribe((params) => {
+      // 1. Limpieza total de estados anteriores
       this.saldosPendientes = [];
+      this.totalPendiente = 0;
+      this.totalesDocumento = [];
+      this.isLoading = false; // Resetear por si acaso
 
       const p = params['tipo'];
       if (p === 'credito') {
-        this.tipo = 'LCN';
-        this.titulo = 'Crédito';
+        this.tipo = 'Crédito'; // Mejor dejar el texto para el H1
         this.tipoBackend = 'LCN';
       } else if (p === 'debito') {
-        this.tipo = 'LDN';
-        this.titulo = 'Débito';
+        this.tipo = 'Débito';
         this.tipoBackend = 'LDN';
-      } else {
-        this.tipo = '';
-        this.titulo = '';
       }
 
-      //this.loadData();
+      // 2. Si el usuario ya eligió una fecha antes de cambiar de pestaña,
+      // recargar los datos automáticamente para el nuevo tipo.
+      if (this.selectedDate) {
+        this.cargarSaldoPendiente();
+      }
     });
   }
 
   onDateSelected(event: Date | null) {
     if (!event) return;
+
     this.selectedDate = event;
     this.cargarSaldoPendiente();
   }
 
   cargarSaldoPendiente() {
-    // 1. FORMATEO DE FECHA CLAVE: DDMMYYYY
-    const dia = this.selectedDate.getDate().toString().padStart(2, '0');
-    const mes = (this.selectedDate.getMonth() + 1).toString().padStart(2, '0'); // getMonth es 0-indexado
-    const anio = this.selectedDate.getFullYear().toString();
+    if (this.isLoading) return;
 
-    // Formato final: DDMMYYYY
+    this.isLoading = true;
+    // Limpiamos datos previos para asegurar una vista limpia
+    this.saldosPendientes = [];
+    this.totalPendiente = 0;
+    this.totalesDocumento = [];
+
+    const dia = this.selectedDate.getDate().toString().padStart(2, '0');
+    const mes = (this.selectedDate.getMonth() + 1).toString().padStart(2, '0');
+    const anio = this.selectedDate.getFullYear().toString();
     const fechaStrBackend = `${dia}${mes}${anio}`;
 
     const data = {
@@ -72,28 +83,99 @@ export class SaldoPendienteComponent {
       fecha: fechaStrBackend,
     };
 
-    // 2. Manejo de la Suscripción
     this.saldoPentiente.getSaldoPendiente(data).subscribe({
       next: (response: any) => {
-        // Asumiendo que response tiene la estructura { data: { detalle_transacciones, totales } }
-        this.saldosPendientes = response.data.detalle_transacciones || [];
-        this.totalPendiente = response.data.totales.total_deuda_pendiente || 0;
+        const detalleOriginal = response.data?.detalle_transacciones || [];
+        const total = response.data?.totales?.total_deuda_pendiente || 0;
 
-        this.totalesDocumento = this.transformarTotales(
-          response.data.totales.totales_por_documento
-        );
+        if (detalleOriginal.length === 0 && total === 0) {
+          this.notifier.notify(
+            'warning',
+            `No se encontraron registros para el ${dia}/${mes}/${anio}`
+          );
+          this.saldosPendientes = [];
+        } else {
+          // Mapeo selectivo solo para los campos de montos
+          this.saldosPendientes = detalleOriginal.map((r: any) => {
+            const record: any = { ...r }; // Copiamos el resto de los campos ya formateados
 
-        console.log('totales por documento', this.totalesDocumento);
+            if (this.tipoBackend === 'LCN') {
+              // Formateo específico para Crédito
+              record.MONTO_VENTA = formatCLP(r.MONTO_VENTA);
+              record.DEUDA_POR_PAGAR = formatCLP(r.DEUDA_POR_PAGAR);
+            } else if (this.tipoBackend === 'LDN') {
+              // Formateo específico para Débito
+              record.MONTO_VENTA = formatCLP(r.MONTO_VENTA);
+              record.DEUDA_POR_PAGAR = formatCLP(r.DEUDA_POR_PAGAR);
+            }
 
-        // Notificación de éxito
-        this.notifier.notify('success', `Datos cargados hasta el ${dia}/${mes}/${anio}`);
+            return record;
+          });
+
+          this.totalPendiente = total;
+          this.totalesDocumento = this.transformarTotales(
+            response.data.totales.totales_por_documento
+          );
+          this.notifier.notify('success', `Datos cargados correctamente`);
+        }
+
+        this.isLoading = false;
       },
       error: (err: any) => {
-        console.error('Error al cargar saldo pendiente:', err);
         this.notifier.notify('error', 'Error al consultar el saldo pendiente.');
-        this.saldosPendientes = [];
-        this.totalPendiente = 0;
-        this.totalesDocumento = []; // Limpiar en caso de error
+        this.isLoading = false;
+      },
+    });
+  }
+
+  Exportar() {
+    if (this.isExporting) {
+      return; // Si ya está exportando, no hacer nada
+    }
+
+    this.isExporting = true;
+
+    const dia = this.selectedDate.getDate().toString().padStart(2, '0');
+    const mes = (this.selectedDate.getMonth() + 1).toString().padStart(2, '0');
+    const anio = this.selectedDate.getFullYear().toString();
+    const fechaStrBackend = `${dia}${mes}${anio}`;
+
+    const data = {
+      tipo: this.tipoBackend,
+      fecha: fechaStrBackend,
+    };
+
+    this.saldoPentiente.exportarExcel(data).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+
+        const now = new Date();
+        const fecha = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+          2,
+          '0'
+        )}-${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(
+          2,
+          '0'
+        )}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(
+          2,
+          '0'
+        )}`;
+
+        a.download = `saldo_pendiente_${this.tipoBackend}_${fecha}.xlsx`;
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        this.notifier.notify('success', 'Excel creado con exito');
+        this.isExporting = false;
+      },
+      error: (err) => {
+        //console.error('Error exportando Excel:', err);
+        this.notifier.notify('error', 'Error al generar el Excel', err);
+        this.isExporting = false;
       },
     });
   }

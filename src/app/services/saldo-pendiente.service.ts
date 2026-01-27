@@ -12,4 +12,10 @@ export class SaldoPendienteService {
   getSaldoPendiente(data: any) {
     return this.http.post(`${this.apiUrl}/saldo-pendiente`, data);
   }
+
+  exportarExcel(data: any) {
+    return this.http.post(`${this.apiUrl}/saldo-pendiente-excel`, data, {
+      responseType: 'blob',
+    });
+  }
 }

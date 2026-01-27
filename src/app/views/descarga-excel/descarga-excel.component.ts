@@ -17,6 +17,8 @@ export class DescargaExcelComponent {
   paginaActual: number = 1;
   totalPaginas: number = 1;
   mesSeleccionado: string = '';
+  isLoading: boolean = false;
+  isExporting: boolean = false;
 
   constructor(
     private descargaExcelService: DescargaExcelService,
@@ -144,6 +146,10 @@ export class DescargaExcelComponent {
   }
 
   descargarExcel(item: any) {
+    if (this.isLoading) return;
+
+    this.isLoading = true;
+
     const fechaFormateada = item.fecha.replace(/-/g, '/');
 
     const data = {
@@ -163,6 +169,7 @@ export class DescargaExcelComponent {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
         this.notifier.notify('success', 'Excel creado con exito');
+        this.isLoading = false;
       },
       error: (err) => {
         if (err.error instanceof Blob) {
@@ -176,8 +183,10 @@ export class DescargaExcelComponent {
             }
           };
           reader.readAsText(err.error);
+          this.isLoading = false;
         } else {
           this.notifier.notify('error', 'Error al exportar el archivo.');
+          this.isLoading = false;
         }
         console.error('Error exportando Excel:', err);
       },

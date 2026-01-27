@@ -1,7 +1,9 @@
 <h1>Status cuadratura</h1>
 <c-container>
   <br />
-  <h4>Diario</h4>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Resumen Informativo del Día</h4>
+  </div>
   <c-row>
     <c-col lg="4">
       <c-date-picker
@@ -138,49 +140,66 @@
     </c-col>
   </c-row>
   <hr />
-  <h4>Mensual</h4>
+
   <c-row class="align-items-start">
-    <c-col>
-      <c-card color="light" class="mb-3">
-        <c-card-header>Totales</c-card-header>
+    <c-col md="4">
+      <c-card color="primary" textColor="white" class="mb-3 shadow-sm">
+        <c-card-header class="fw-bold">Perfil SD</c-card-header>
         <c-card-body>
-          <h2>0</h2>
+          <div class="d-flex justify-content-between">
+            <span>Transacciones:</span>
+            <span class="fw-bold">{{ totalSD }}</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Monto Total:</span>
+            <span class="fw-bold">{{ montoSD | currency: 'CLP' : '$' : '1.0-0' }}</span>
+          </div>
         </c-card-body>
-        <c-card-footer
-          ><button cButton color="" textColor="white" variant="outline">Revisar</button>
+        <c-card-footer>
+          <small>Aprobados: {{ infoTotales?.sd?.aprobados || 0 }}</small>
         </c-card-footer>
       </c-card>
     </c-col>
-    <c-col>
-      <c-card color="success" textColor="white" class="mb-3">
-        <c-card-header>Sin conflictos</c-card-header>
+
+    <c-col md="4">
+      <c-card color="dark" textColor="white" class="mb-3 shadow-sm">
+        <c-card-header class="fw-bold">Perfil FICA</c-card-header>
         <c-card-body>
-          <h2>0</h2>
+          <div class="d-flex justify-content-between">
+            <span>Transacciones:</span>
+            <span class="fw-bold">{{ totalFICA }}</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Monto Total:</span>
+            <span class="fw-bold">{{ montoFICA | currency: 'CLP' : '$' : '1.0-0' }}</span>
+          </div>
         </c-card-body>
-        <c-card-footer
-          ><button cButton color="" textColor="white" variant="outline">Revisar</button>
+        <c-card-footer>
+          <small>Aprobados: {{ infoTotales?.fica?.aprobados || 0 }}</small>
         </c-card-footer>
       </c-card>
     </c-col>
-    <c-col>
-      <c-card color="danger" textColor="white" class="mb-3">
-        <c-card-header>Con conflictos</c-card-header>
+
+    <c-col md="4">
+      <c-card color="light" class="mb-3 border-top-info shadow-sm">
+        <c-card-header class="fw-bold text-info">Total Consolidado</c-card-header>
         <c-card-body>
-          <h2>0</h2>
+          <div class="d-flex justify-content-between">
+            <span>Total Día:</span>
+            <span class="fw-bold h4 mb-0 text-dark">{{ infoTotales?.global?.total || 0 }}</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Monto Día:</span>
+            <span class="fw-bold text-dark">{{
+              infoTotales?.global?.monto || 0 | currency: 'CLP' : '$' : '1.0-0'
+            }}</span>
+          </div>
         </c-card-body>
-        <c-card-footer
-          ><button cButton color="" textColor="white" variant="outline">Revisar</button>
-        </c-card-footer>
-      </c-card>
-    </c-col>
-    <c-col>
-      <c-card color="info" textColor="white" class="mb-3">
-        <c-card-header>Reprocesados</c-card-header>
-        <c-card-body>
-          <h2>0</h2>
-        </c-card-body>
-        <c-card-footer
-          ><button cButton color="" textColor="white" variant="outline">Revisar</button>
+        <c-card-footer>
+          <div class="text-muted" style="font-size: 0.75rem">
+            <c-icon name="cil-info" size="sm"></c-icon>
+            * Los montos pueden variar según los conflictos y reprocesos detectados en el día.
+          </div>
         </c-card-footer>
       </c-card>
     </c-col>

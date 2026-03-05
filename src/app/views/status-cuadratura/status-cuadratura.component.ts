@@ -22,6 +22,12 @@ export class StatusCuadraturaComponent {
   montoSD: number = 0;
   totalFICA: number = 0;
   montoFICA: number = 0;
+  montoDebitoFica: number = 0;
+  montoCreditoFica: number = 0;
+  montoDebitoSD: number = 0;
+  montoCreditoSD: number = 0;
+  infoTotalesCredito: number = 0;
+  infoTotalesDebito: number = 0;
   infoTotales: any = null;
   cargandoTotales: boolean = false;
   tipo: string = '';
@@ -164,6 +170,12 @@ export class StatusCuadraturaComponent {
     this.montoSD = 0;
     this.totalFICA = 0;
     this.montoFICA = 0;
+    this.montoCreditoFica = 0;
+    this.montoDebitoFica = 0;
+    this.montoCreditoSD = 0;
+    this.montoDebitoSD = 0;
+    this.infoTotalesCredito = 0;
+    this.infoTotalesDebito = 0;
   }
 
   onReprocesar(item: any) {
@@ -256,10 +268,17 @@ export class StatusCuadraturaComponent {
       next: (res: any) => {
         if (res.success && res.data?.existenPendientes) {
           this.PendientesAnteriores = true;
-          const fechaPendiente = res.data.fechaMasReciente; // ej: '250530'
+          const rawFecha = String(res.data.fechaMasReciente); // ej: '250530'
+
+          const anio = rawFecha.substring(0, 2);
+          const mes = rawFecha.substring(2, 4);
+          const dia = rawFecha.substring(4, 6);
+
+          const fechaFormateada = `${dia}/${mes}/${anio}`;
+
           this.notifier.notify(
             'warning',
-            `¡Atención! Existen registros pendientes en días anteriores (ej: ${fechaPendiente}).`
+            `¡Atención! Existen registros pendientes en días anteriores (ej: ${fechaFormateada}).`
           );
         }
       },
@@ -325,13 +344,21 @@ export class StatusCuadraturaComponent {
         // Validamos que la respuesta sea exitosa y traiga data
         if (res.success && res.data) {
           this.infoTotales = res.data;
+          this.infoTotalesCredito =
+            (res.data.fica?.monto_credito || 0) + (res.data.sd?.monto_credito || 0);
+          this.infoTotalesDebito =
+            (res.data.fica?.monto_debito || 0) + (res.data.sd?.monto_debito || 0);
 
           // Asignación segura con fallback a 0
           this.totalSD = res.data.sd?.total || 0;
           this.montoSD = res.data.sd?.monto || 0;
+          this.montoCreditoSD = res.data.sd?.monto_credito || 0;
+          this.montoDebitoSD = res.data.sd?.monto_debito || 0;
 
           this.totalFICA = res.data.fica?.total || 0;
           this.montoFICA = res.data.fica?.monto || 0;
+          this.montoCreditoFica = res.data.fica?.monto_credito || 0;
+          this.montoDebitoFica = res.data.fica?.monto_debito || 0;
 
           //this.notifier.notify('success', 'Totales informativos cargados correctamente');
         } else {

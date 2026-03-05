@@ -151,6 +151,14 @@
             <span class="fw-bold">{{ totalSD }}</span>
           </div>
           <div class="d-flex justify-content-between">
+            <span>Monto Débito:</span>
+            <span class="fw-bold">{{ montoDebitoSD | currency: 'CLP' : '$' : '1.0-0' }}</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Monto Crédito:</span>
+            <span class="fw-bold">{{ montoCreditoSD | currency: 'CLP' : '$' : '1.0-0' }}</span>
+          </div>
+          <div class="d-flex justify-content-between">
             <span>Monto Total:</span>
             <span class="fw-bold">{{ montoSD | currency: 'CLP' : '$' : '1.0-0' }}</span>
           </div>
@@ -170,6 +178,14 @@
             <span class="fw-bold">{{ totalFICA }}</span>
           </div>
           <div class="d-flex justify-content-between">
+            <span>Monto Débito:</span>
+            <span class="fw-bold">{{ montoDebitoFica | currency: 'CLP' : '$' : '1.0-0' }}</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Monto Crédito:</span>
+            <span class="fw-bold">{{ montoCreditoFica | currency: 'CLP' : '$' : '1.0-0' }}</span>
+          </div>
+          <div class="d-flex justify-content-between">
             <span>Monto Total:</span>
             <span class="fw-bold">{{ montoFICA | currency: 'CLP' : '$' : '1.0-0' }}</span>
           </div>
@@ -187,6 +203,14 @@
           <div class="d-flex justify-content-between">
             <span>Total Día:</span>
             <span class="fw-bold h4 mb-0 text-dark">{{ infoTotales?.global?.total || 0 }}</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Monto Débito:</span>
+            <span class="fw-bold">{{ infoTotalesDebito | currency: 'CLP' : '$' : '1.0-0' }}</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Monto Crédito:</span>
+            <span class="fw-bold">{{ infoTotalesCredito | currency: 'CLP' : '$' : '1.0-0' }}</span>
           </div>
           <div class="d-flex justify-content-between">
             <span>Monto Día:</span>
